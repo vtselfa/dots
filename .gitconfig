@@ -1,0 +1,9 @@
+[user]
+	email = vtselfa@gmail.com
+	name = Vicent Selfa
+[color]
+	ui = true
+[core]
+	editor = vim
+[merge]
+	tool = meld
