@@ -5,6 +5,10 @@ find $(dirname $0) -path "*/.git/*" -prune -o -not -type d -a -not -name "LICENS
 	else
 		echo "$HOME/$target"
 		mkdir -p "$HOME/$(dirname $target)"
-		ln -s "$(readlink -f $config)" "$HOME/$target"
+		if [ -h $config ]; then
+			cp -P "$config" "$HOME/$target"
+		else
+			ln -s "$(readlink -f $config)" "$HOME/$target"
+		fi
 	fi
 done
