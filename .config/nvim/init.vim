@@ -24,7 +24,7 @@ Plug 'scrooloose/syntastic'
 
 
 " Very good autocompletion
-Plug 'Valloric/YouCompleteMe', { 'do': 'YCM_CORES=1 ./install.py --clang-completer >build.out 2>build.err &' }
+Plug 'Valloric/YouCompleteMe', { 'do': 'YCM_CORES=1 python2 ./install.py --clang-completer >build.out 2>build.err &' }
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 	nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 	nnoremap <leader>jD :YcmCompleter GoToDeclaration<CR>
