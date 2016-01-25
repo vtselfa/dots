@@ -126,11 +126,17 @@ Plug 'vim-scripts/visualrepeat'
 Plug 'haya14busa/vim-asterisk'
 let g:asterisk#keeppos = 1
 
+
 " Add/modify surroundings " ' [] etc
 Plug 'tpope/vim-surround'
 
 
+" Grammar checking
+Plug 'vtselfa/LanguageTool'
+
+
 call plug#end()
+
 
 " Mappings for vim-asterisk. They should be after calling plug#end().
 map *   <Plug>(asterisk-*)
