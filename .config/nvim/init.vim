@@ -76,7 +76,7 @@ Plug 'bling/vim-airline'
 	let g:airline_powerline_fonts = 1
 	let g:airline#extensions#tabline#enabled = 1
 	let g:airline_theme='murmur'
-	set guifont=DejaVu\ Sans\ Mono\ for\ Powerline
+	set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 9
 
 
 " Fonts for Airline
@@ -204,6 +204,10 @@ if has('gui_running')
 	set guioptions-=T
 	set guioptions-=m
 endif
+
+" Folding
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
 
 
 
