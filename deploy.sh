@@ -12,3 +12,10 @@ find $(dirname $0) -path "*/.git/*" -prune -o -not -type d -a -not -name "LICENS
 		fi
 	fi
 done
+
+
+if [ -d "$HOME/.tmux/plugins/tpm/.git" ]; then
+	echo "$HOME/.tmux/plugins/tpm/.git already exists, skipping"
+else
+	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
