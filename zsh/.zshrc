@@ -49,5 +49,5 @@ then
 fi
 
 export PYTHONSTARTUP="$HOME/.pystartup"
-export SCRIPTS=$HOME/execs/scripts/vicent
-export EDITOR=vim
+export EDITOR=$(which vim)
+export LANG=es_ES.utf8
