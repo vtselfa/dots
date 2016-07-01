@@ -78,6 +78,9 @@ Plug 'bling/vim-airline'
 	let g:airline_theme='murmur'
 	set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 9
 
+" Airline themes
+Plug 'vim-airline/vim-airline-themes'
+
 
 " Fonts for Airline
 Plug 'powerline/fonts', { 'do': './install.sh >install.out 2>install.err &' }
@@ -155,6 +158,7 @@ map gz# <Plug>(asterisk-gz#)
 " ---------------
 
 set nocompatible 	" Be iMproved
+set encoding=utf-8
 syntax on			" Sintax highlighting
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching
