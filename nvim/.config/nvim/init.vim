@@ -109,10 +109,10 @@ Plug 'vim-scripts/Mark'
 
 " +/- vcs signs
 Plug 'mhinz/vim-signify'
-	highlight SignColumn guibg=lightgrey
-	highlight SignifySignAdd    cterm=bold ctermbg=237  ctermfg=119 guifg=Green guibg=Lightgrey
-	highlight SignifySignDelete cterm=bold ctermbg=237  ctermfg=167 guifg=Red guibg=Lightgrey
-	highlight SignifySignChange cterm=bold ctermbg=237  ctermfg=227 guifg=Blue guibg=Lightgrey
+	highlight SignColumn guibg=lightgrey ctermbg=237
+	highlight SignifySignDelete ctermbg=237 ctermfg=9 guifg=Red guibg=Lightgrey
+	highlight SignifySignAdd    ctermbg=237 ctermfg=34
+	highlight SignifySignChange ctermbg=237 ctermfg=227 guifg=Blue guibg=Lightgrey
 	let g:signify_vcs_list = ['git', 'svn']
 	let g:signify_sign_change = '~'
 	let g:signify_sign_delete_first_line = '‾'
@@ -138,6 +138,10 @@ Plug 'tpope/vim-surround'
 Plug 'vtselfa/LanguageTool'
 
 
+" Library with functions used by other plugins
+Plug 'vim-scripts/ingo-library'
+
+
 call plug#end()
 
 
@@ -158,7 +162,9 @@ map gz# <Plug>(asterisk-gz#)
 " ---------------
 
 set nocompatible 	" Be iMproved
-set encoding=utf-8
+if !has('nvim')
+	set encoding=utf-8
+endif
 syntax on			" Sintax highlighting
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching
@@ -225,6 +231,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 "Delete trailing whitespaces on source files on write
 autocmd FileType c,cpp,java,php,python,tex autocmd BufWritePre <buffer> :%s/\s\+$//e
 
+" autocmd FileType mako,yaml autocmd setlocal shiftwidth=2 tabstop=2 expandtab
 
 
 " ---------------
