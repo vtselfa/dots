@@ -51,3 +51,5 @@ fi
 export PYTHONSTARTUP="$HOME/.pystartup"
 export EDITOR=$(which vim)
 export LANG=es_ES.utf8
+
+alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
