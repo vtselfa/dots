@@ -143,6 +143,21 @@ Plug 'vtselfa/LanguageTool'
 Plug 'vim-scripts/ingo-library'
 
 
+" Highlight differently the current search result
+Plug 'haya14busa/incsearch.vim'
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+highlight IncSearchCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
+highlight IncSearchOnCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
+
+
+Plug 'haya14busa/incsearch-fuzzy.vim'
+map z/ <Plug>(incsearch-fuzzy-/)
+map z? <Plug>(incsearch-fuzzy-?)
+map zg/ <Plug>(incsearch-fuzzy-stay)
+
+
 call plug#end()
 
 
