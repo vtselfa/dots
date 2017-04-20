@@ -3,9 +3,9 @@
 "--------
 
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-      \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall
+	silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+			\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	autocmd VimEnter * PlugInstall
 endif
 
 
@@ -127,7 +127,6 @@ Plug 'vim-scripts/visualrepeat'
 
 " Better * command
 Plug 'haya14busa/vim-asterisk'
-let g:asterisk#keeppos = 1
 
 
 " Add/modify surroundings " ' [] etc
@@ -154,6 +153,7 @@ map z*  <Plug>(asterisk-z*)
 map gz* <Plug>(asterisk-gz*)
 map z#  <Plug>(asterisk-z#)
 map gz# <Plug>(asterisk-gz#)
+let g:asterisk#keeppos = 1
 
 
 
@@ -161,35 +161,35 @@ map gz# <Plug>(asterisk-gz#)
 " General options
 " ---------------
 
-set nocompatible 	" Be iMproved
+set nocompatible	" Be iMproved
 if !has('nvim')
 	set encoding=utf-8
 endif
 syntax on			" Sintax highlighting
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching
-set ignorecase 		" Ignore case when searching brackets.
+set ignorecase		" Ignore case when searching brackets.
 set smartcase		" Do smart case matching
 set incsearch		" Incremental search
 set autowrite		" Automatically save before commands like :next and :make
 set autoread		" Auto read when a file is changed from the outside
-set hidden 			" Hide buffers when they are abandoned
+set hidden			" Hide buffers when they are abandoned
 set mouse=a 		" Enable mouse usage (all modes)
-set ruler 			" Always show current position in the status bar
-set backspace=eol,start,indent 	" Configure backspace so it acts as it should act
+set ruler			" Always show current position in the status bar
+set backspace=eol,start,indent	" Configure backspace so it acts as it should act
 set whichwrap+=<,>,h,l			" Configure arrows so they acts as it should act
-set mat=2 						" How many tenths of a second to blink when matching brackets
-set tabpagemax=50 				" Maximum number of open tabs
-set noswapfile 					" Turn off annoying swapfiles
-let g:tex_flavor = "latex" 		" Always expect LaTeX code (instead of plain TeX code) within .tex files
+set mat=2						" How many tenths of a second to blink when matching brackets
+set tabpagemax=50				" Maximum number of open tabs
+set noswapfile					" Turn off annoying swapfiles
+let g:tex_flavor = "latex"		" Always expect LaTeX code (instead of plain TeX code) within .tex files
 
 " Indentation
-set autoindent 		" Maintain indentation level after newline
+set autoindent		" Maintain indentation level after newline
 set tabstop=4		" Tab width
 set shiftwidth=4	" How many positions [<] and [>] indent or deindent
-set breakindent 	" Word wrapping mantaining indentation
+set breakindent		" Word wrapping mantaining indentation
 set showbreak=....	" What is shown in wrapped lines
-set linebreak 		" Only wrap at a character in the 'breakat' option
+set linebreak		" Only wrap at a character in the 'breakat' option
 
 " Move Backup Files to ~/.nvim/sessions
 silent !mkdir -p ~/.nvim/sessions
@@ -231,7 +231,6 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 "Delete trailing whitespaces on source files on write
 autocmd FileType c,cpp,java,php,python,tex autocmd BufWritePre <buffer> :%s/\s\+$//e
 
-" autocmd FileType mako,yaml autocmd setlocal shiftwidth=2 tabstop=2 expandtab
 
 
 " ---------------
