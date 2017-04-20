@@ -28,6 +28,8 @@ Plug 'Valloric/YouCompleteMe', { 'do': 'YCM_CORES=1 python2 ./install.py --clang
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 	nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 	nnoremap <leader>jD :YcmCompleter GoToDeclaration<CR>
+	highlight YcmErrorSection ctermbg=0 ctermfg=9
+	highlight YcmWarningSection ctermbg=0 ctermfg=220
 
 
 " A simple, easy-to-use Vim alignment plugin.
