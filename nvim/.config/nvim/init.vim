@@ -236,6 +236,16 @@ endif
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
 
+" Diff mode
+highlight DiffAdd    ctermfg=0 ctermbg=119
+highlight DiffDelete ctermfg=0 ctermbg=203
+highlight DiffChange ctermfg=0 ctermbg=159
+highlight DiffText   ctermfg=9 ctermbg=81
+hi VertSplit ctermbg=237
+hi Folded cterm=bold ctermbg=237 ctermfg=15
+hi FoldColumn ctermbg=237 ctermfg=15
+set fdc=0
+
 
 
 " -------------------
