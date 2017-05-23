@@ -53,6 +53,7 @@ export EDITOR=$(which vim)
 export LANG=es_ES.utf8
 
 alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
+alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
 
 # Quick ps in csv format
 psv() {
