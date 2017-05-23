@@ -53,9 +53,13 @@ export EDITOR=$(which vim)
 export LANG=es_ES.utf8
 
 alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
-alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
 
 # Quick ps in csv format
 psv() {
 	ps -Ao "pid,user,pcpu,pmem,comm" --sort -pcpu,-pmem | sed 's/^ \+//g; s/ \+$//g; s/ \+/ /g' | awk '{for (i=1; i<NF; i++){ if(i<=4) printf("%s|", $i); else printf("%s ", $i)} print $i}' | head -10 | csvlook -d '|'
+}
+
+fixenv() {
+	eval $(tmux showenv -s SSH_AUTH_SOCK)
+	eval $(tmux showenv -s DISPLAY)
 }
