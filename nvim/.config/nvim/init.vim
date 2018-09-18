@@ -17,17 +17,29 @@ endif
 call plug#begin('~/.config/nvim/plugged')
 
 
+" Snippets engine
+Plug 'SirVer/ultisnips'
+    let g:UltiSnipsEditSplit="vertical"
+
+
+" Snippets are separated from the engine
+Plug 'honza/vim-snippets'
+
+
 "Syntax and errors highlighter
 Plug 'scrooloose/syntastic'
 	let g:syntastic_always_populate_loc_list = 1
 	nnoremap <F5> :SyntasticCheck<CR>
 
 
+" Fuzzy finder
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
+
 " Very good autocompletion
 Plug 'Valloric/YouCompleteMe', { 'do': 'YCM_CORES=1 python2 ./install.py --clang-completer >build.out 2>build.err &' }
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-	nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-	nnoremap <leader>jD :YcmCompleter GoToDeclaration<CR>
 	highlight YcmErrorSection ctermbg=0 ctermfg=9
 	highlight YcmWarningSection ctermbg=0 ctermfg=220
 
@@ -127,35 +139,11 @@ Plug 'tpope/vim-repeat'
 Plug 'vim-scripts/visualrepeat'
 
 
-" Better * command
-Plug 'haya14busa/vim-asterisk'
-
-
 " Add/modify surroundings " ' [] etc
 Plug 'tpope/vim-surround'
 
 
-" Grammar checking
-Plug 'vtselfa/LanguageTool'
-
-
-" Library with functions used by other plugins
-Plug 'vim-scripts/ingo-library'
-
-
-" Highlight differently the current search result
-Plug 'haya14busa/incsearch.vim'
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-highlight IncSearchCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
-highlight IncSearchOnCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
-
-
-Plug 'haya14busa/incsearch-fuzzy.vim'
-map z/ <Plug>(incsearch-fuzzy-/)
-map z? <Plug>(incsearch-fuzzy-?)
-map zg/ <Plug>(incsearch-fuzzy-stay)
+"Plug 'vim-scripts/ingo-library'
 
 
 Plug 'rhysd/vim-clang-format'
@@ -164,22 +152,7 @@ autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 
 
-Plug 'jeetsukumaran/vim-buffergator'
-
-
 call plug#end()
-
-
-" Mappings for vim-asterisk. They should be after calling plug#end().
-map *   <Plug>(asterisk-*)
-map #   <Plug>(asterisk-#)
-map g*  <Plug>(asterisk-g*)
-map g#  <Plug>(asterisk-g#)
-map z*  <Plug>(asterisk-z*)
-map gz* <Plug>(asterisk-gz*)
-map z#  <Plug>(asterisk-z#)
-map gz# <Plug>(asterisk-gz#)
-let g:asterisk#keeppos = 1
 
 
 
@@ -187,6 +160,7 @@ let g:asterisk#keeppos = 1
 " General options
 " ---------------
 
+colorscheme desert
 set nocompatible	" Be iMproved
 if !has('nvim')
 	set encoding=utf-8
@@ -218,13 +192,13 @@ set showbreak=....	" What is shown in wrapped lines
 set linebreak		" Only wrap at a character in the 'breakat' option
 
 " Move Backup Files to ~/.nvim/sessions
-silent !mkdir -p ~/.nvim/sessions
-set backupdir=~/.nvim/sessions
-set dir=~/.nvim/sessions
+silent !mkdir -p ~/.vim/sessions
+set backupdir=~/.vim/sessions
+set dir=~/.vim/sessions
 
 " Set persistent undo
-silent !mkdir -p ~/.nvim/undodir
-set undodir=~/.nvim/undodir
+silent !mkdir -p ~/.vim/undodir
+set undodir=~/.vim/undodir
 set undofile
 set undolevels=1000      " use many levels of undo
 
@@ -278,9 +252,15 @@ let mapleader = ","
 " w -> Toggle word wrapping
 nnoremap <leader>w :set wrap!<CR>
 
-" p -> Toggle paste mode
-set pastetoggle=<leader>p
+" p -> togle paste
+nnoremap <leader>p :set paste!<CR>
 
+" Youcompleteme mappings
+nnoremap <leader>gg :YcmCompleter GoTo<CR>
+nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
+nnoremap <leader>gD :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>fi :YcmCompleter FixIt<CR>
 
 
 " --------

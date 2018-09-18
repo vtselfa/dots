@@ -40,7 +40,6 @@ unsetopt correct_all
 bindkey "^[[3~" delete-char
 bindkey "^[[5D" backward-word
 bindkey "^[[5C" forward-word
-export PATH=$HOME/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/bin/core_perl:$HOME/plotting_scripts
 
 # Turn on 256 color support...
 if [ "x$TERM" = "xxterm" ]
@@ -48,7 +47,6 @@ then
     export TERM="xterm-256color"
 fi
 
-export PYTHONSTARTUP="$HOME/.pystartup"
 export EDITOR=$(which vim)
 export LANG=es_ES.utf8
 
