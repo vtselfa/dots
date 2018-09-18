@@ -146,9 +146,6 @@ Plug 'vim-scripts/visualrepeat'
 Plug 'tpope/vim-surround'
 
 
-"Plug 'vim-scripts/ingo-library'
-
-
 Plug 'rhysd/vim-clang-format'
 " map to <Leader>cf in C++ code
 autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
@@ -200,6 +197,7 @@ let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
 let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
 
 " Indentation
+set expandtab
 set autoindent		" Maintain indentation level after newline
 set tabstop=4		" Tab width
 set shiftwidth=4	" How many positions [<] and [>] indent or deindent

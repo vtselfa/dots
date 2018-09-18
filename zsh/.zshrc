@@ -48,18 +48,17 @@ then
 fi
 
 export EDITOR=$(which vim)
-export LANG=es_ES.utf8
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
 
-# Quick ps in csv format
-psv() {
-	ps -Ao "pid,user,pcpu,pmem,comm" --sort -pcpu,-pmem | sed 's/^ \+//g; s/ \+$//g; s/ \+/ /g' | awk '{for (i=1; i<NF; i++){ if(i<=4) printf("%s|", $i); else printf("%s ", $i)} print $i}' | head -10 | csvlook -d '|'
-}
+# Project aliases
+source $HOME/.aliases.zsh
 
-fixenv() {
-	eval $(tmux showenv -s SSH_AUTH_SOCK)
-	eval $(tmux showenv -s DISPLAY)
-}
+# If inside tmux, set tmux-exported variables
+if [ "x$TMUX" != "x" ]; then
+    eval $(/usr/intel/bin/tmux showenv -s)
+fi
+
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
