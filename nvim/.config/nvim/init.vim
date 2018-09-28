@@ -90,12 +90,12 @@ Plug 'bling/vim-airline'
 	set noshowmode
 	let g:airline_powerline_fonts = 1
 	let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#show_splits = 0
 	let g:airline_theme='murmur'
 	set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 9
 
 " Airline themes
 Plug 'vim-airline/vim-airline-themes'
-    let g:airline#extensions#tabline#show_splits = 0
 
 
 " Fonts for Airline
@@ -119,7 +119,8 @@ Plug 'chrisbra/csv.vim'
 
 
 " Mark multiple words and all their occurences with different colors
-Plug 'vim-scripts/Mark'
+Plug 'inkarkat/vim-ingo-library'
+Plug 'inkarkat/vim-mark'
 " Defines <leader> m,n,r,*,/
 
 
@@ -275,7 +276,6 @@ nnoremap <leader>gg :YcmCompleter GoTo<CR>
 nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
 nnoremap <leader>gD :YcmCompleter GoToDeclaration<CR>
 nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
-
 nnoremap <silent> <Plug>FixIt :YcmCompleter FixIt<CR>
     \:call repeat#set("\<Plug>FixIt")<CR>
 nmap <leader>fi <Plug>FixIt

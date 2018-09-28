@@ -61,3 +61,5 @@ fixenv() {
 	eval $(tmux showenv -s SSH_AUTH_SOCK)
 	eval $(tmux showenv -s DISPLAY)
 }
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
