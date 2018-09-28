@@ -281,11 +281,19 @@ nnoremap <silent> <Plug>FixIt :YcmCompleter FixIt<CR>
 nmap <leader>fi <Plug>FixIt
 
 
+" Edit macro
+nmap <Leader>em :call EditMacro()<CR> <Plug>em
 
 " --------
 " Functions
 " --------
 
+function! EditMacro()
+  call inputsave()
+  let g:regToEdit = input('Register to edit: ')
+  call inputrestore()
+  execute "nnoremap <Plug>em :let @" . eval("g:regToEdit") . "='<C-R><C-R>" . eval("g:regToEdit")
+endfunction
 
 
 " --------
