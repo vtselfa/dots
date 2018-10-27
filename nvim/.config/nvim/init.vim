@@ -35,6 +35,7 @@ Plug 'scrooloose/syntastic'
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+    let g:fzf_buffers_jump = 1
 
 
 " Very good autocompletion
@@ -94,6 +95,7 @@ Plug 'bling/vim-airline'
 
 " Airline themes
 Plug 'vim-airline/vim-airline-themes'
+    let g:airline#extensions#tabline#show_splits = 0
 
 
 " Fonts for Airline
@@ -152,6 +154,13 @@ autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 
 
+" Vim sugar for the UNIX shell commands that need it the most.
+Plug 'tpope/vim-eunuch'
+
+" Easily search for, substitute, and abbreviate multiple variants of a word
+Plug 'tpope/vim-abolish'
+
+
 call plug#end()
 
 
@@ -171,6 +180,7 @@ set showmatch		" Show matching
 set ignorecase		" Ignore case when searching brackets.
 set smartcase		" Do smart case matching
 set incsearch		" Incremental search
+set hlsearch
 set autowrite		" Automatically save before commands like :next and :make
 set autoread		" Auto read when a file is changed from the outside
 set hidden			" Hide buffers when they are abandoned
@@ -255,12 +265,21 @@ nnoremap <leader>w :set wrap!<CR>
 " p -> togle paste
 nnoremap <leader>p :set paste!<CR>
 
+" FZF maps
+nnoremap <leader>bb :Buffers<CR>
+nnoremap <leader>bl :BLines<CR>
+nnoremap <leader>ff :FZF<CR>
+
 " Youcompleteme mappings
 nnoremap <leader>gg :YcmCompleter GoTo<CR>
 nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
 nnoremap <leader>gD :YcmCompleter GoToDeclaration<CR>
 nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
-nnoremap <leader>fi :YcmCompleter FixIt<CR>
+
+nnoremap <silent> <Plug>FixIt :YcmCompleter FixIt<CR>
+    \:call repeat#set("\<Plug>FixIt")<CR>
+nmap <leader>fi <Plug>FixIt
+
 
 
 " --------
