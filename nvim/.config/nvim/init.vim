@@ -269,10 +269,11 @@ nnoremap <leader>w :set wrap!<CR>
 " p -> togle paste
 nnoremap <leader>p :set paste!<CR>
 
-" FZF maps
 nnoremap <leader>bb :Buffers<CR>
 nnoremap <leader>bl :BLines<CR>
 nnoremap <leader>ff :FZF<CR>
+nnoremap <leader>ffff :VPFS<CR>
+nnoremap <leader>fff :VPFSLocate<CR>
 
 " Youcompleteme mappings
 nnoremap <leader>gg :YcmCompleter GoTo<CR>
@@ -298,6 +299,20 @@ function! EditMacro()
   execute "nnoremap <Plug>em :let @" . eval("g:regToEdit") . "='<C-R><C-R>" . eval("g:regToEdit")
 endfunction
 
+command! -bang VPFS
+  \ call fzf#run(fzf#wrap('vpfs', {'source': 'rg -t cpp -t py -t sh -t mako -t make -t xml --files $vp_source_dirs'}, <bang>0))
+
+command! -bang -nargs=* VPCS
+  \ call fzf#vim#grep(
+  \   'rg -t cpp -t py -t sh -t mako -t make --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>).' $vp_source_dirs', 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+map <F6>    :!updatedb --localpaths="$vp_source_dirs" --output=$HOME/.vp_db<CR> 
+command! -bang VPFSLocate
+   \ call fzf#run(fzf#wrap('vpfslocate', {'source': 'locate -d $HOME/.vp_db '.shellescape(<q-args>) }, <bang>0))
+
 
 " --------
 " Mappings
@@ -322,3 +337,13 @@ if has('nvim') && exists(':tnoremap')
 	tnoremap <a-l> <c-\><c-n><c-w>l
 	tnoremap <silent> <c-w>z <c-\><c-n>:ZoomWinTabToggle<cr>
 endif
+
+
+"
+" Clearshit mappings
+"
+map <F7>    :!cleartool unco %:p <CR>
+map <F8>    :!cleartool co -nc -unr -nmaster -nwa -pti %:p <CR>
+map <F9>    :!cleartool ci -nwa -pti %:p <CR>
+map <F10>   :!cleartool co -nc %:p:h && cleartool mkelem -ci -pti %:p <CR>
+map <F11>   :!cleartool mkelem -ci -pti %:p <CR>

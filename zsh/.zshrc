@@ -47,6 +47,7 @@ then
     export TERM="xterm-256color"
 fi
 
+export PATH=$HOME/bin/:$PATH
 export EDITOR=$(which vim)
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
@@ -59,6 +60,5 @@ source $HOME/.aliases.zsh
 if [ "x$TMUX" != "x" ]; then
     eval $(/usr/intel/bin/tmux showenv -s)
 fi
-
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
