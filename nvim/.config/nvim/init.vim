@@ -33,13 +33,14 @@ Plug 'scrooloose/syntastic'
 
 
 " Fuzzy finder
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
     let g:fzf_buffers_jump = 1
+    set rtp+=~/bin
 
 
 " Very good autocompletion
-Plug 'Valloric/YouCompleteMe', { 'do': 'YCM_CORES=1 python2 ./install.py --clang-completer >build.out 2>build.err &' }
+Plug 'Valloric/YouCompleteMe'
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 	highlight YcmErrorSection ctermbg=0 ctermfg=9
 	highlight YcmWarningSection ctermbg=0 ctermfg=220
@@ -99,7 +100,7 @@ Plug 'vim-airline/vim-airline-themes'
 
 
 " Fonts for Airline
-Plug 'powerline/fonts', { 'do': './install.sh >install.out 2>install.err &' }
+Plug 'powerline/fonts'
 
 
 " Sudo
@@ -300,7 +301,7 @@ function! EditMacro()
 endfunction
 
 command! -bang VPFS
-  \ call fzf#run(fzf#wrap('vpfs', {'source': 'rg -t cpp -t py -t sh -t mako -t make -t xml --files $vp_source_dirs'}, <bang>0))
+  \ call fzf#run(fzf#wrap('vpfs', {'source': 'rg -t cpp -t py -t sh -t mako -t make --files . $vp_source_dirs'}, <bang>0))
 
 command! -bang -nargs=* VPCS
   \ call fzf#vim#grep(

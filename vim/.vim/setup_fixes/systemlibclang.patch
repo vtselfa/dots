@@ -1,0 +1,15 @@
+diff --git a/cpp/ycm/CMakeLists.txt b/cpp/ycm/CMakeLists.txt
+index b0dc892e..fe79ad29 100644
+--- a/cpp/ycm/CMakeLists.txt
++++ b/cpp/ycm/CMakeLists.txt
+@@ -22,8 +22,8 @@ project( ycm_core )
+ option( USE_DEV_FLAGS "Use compilation flags meant for YCM developers" OFF )
+ option( USE_CLANG_COMPLETER "Use Clang semantic completer for C/C++/ObjC" OFF )
+ option( USE_SYSTEM_LIBCLANG "Set to ON to use the system libclang library" OFF )
+-set( PATH_TO_LLVM_ROOT "" CACHE PATH "Path to the root of a LLVM+Clang binary distribution" )
+-set( EXTERNAL_LIBCLANG_PATH "" CACHE PATH "Path to the libclang library to use" )
++set( PATH_TO_LLVM_ROOT "/usr/intel/pkgs/clang/6.0.0/" CACHE PATH "Path to the root of a LLVM+Clang binary distribution" )
++set( EXTERNAL_LIBCLANG_PATH "/usr/intel/pkgs/clang/6.0.0/lib/libclang.so" CACHE PATH "Path to the libclang library to use" )
+ 
+ if ( USE_CLANG_COMPLETER AND
+      NOT USE_SYSTEM_LIBCLANG AND
