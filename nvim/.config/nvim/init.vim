@@ -194,6 +194,11 @@ set tabpagemax=50				" Maximum number of open tabs
 set noswapfile					" Turn off annoying swapfiles
 let g:tex_flavor = "latex"		" Always expect LaTeX code (instead of plain TeX code) within .tex files
 
+" Truecolor
+set termguicolors
+let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+
 " Indentation
 set autoindent		" Maintain indentation level after newline
 set tabstop=4		" Tab width
