@@ -44,6 +44,8 @@ Plug 'Valloric/YouCompleteMe'
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 	highlight YcmErrorSection ctermbg=0 ctermfg=9
 	highlight YcmWarningSection ctermbg=0 ctermfg=220
+    let g:ycm_always_populate_location_list = 1
+    let g:ycm_max_diagnostics_to_display = 150
 
 
 " A simple, easy-to-use Vim alignment plugin.
@@ -301,18 +303,18 @@ function! EditMacro()
 endfunction
 
 command! -bang VPFS
-  \ call fzf#run(fzf#wrap('vpfs', {'source': 'rg -t cpp -t py -t sh -t mako -t make --files . $vp_source_dirs'}, <bang>0))
+  \ call fzf#run(fzf#wrap('vpfs', {'source': 'rg -t cpp -t py -t sh -t mako -t make --files . $VP_SRC_DIRS'}, <bang>0))
 
 command! -bang -nargs=* VPCS
   \ call fzf#vim#grep(
-  \   'rg -t cpp -t py -t sh -t mako -t make --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>).' $vp_source_dirs', 1,
+  \   'rg -t cpp -t py -t sh -t mako -t make --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>).' $VP_SRC_DIRS', 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
   \   <bang>0)
 
-map <F6>    :!updatedb --localpaths="$vp_source_dirs" --output=$HOME/.vp_db<CR> 
+map <F6>    :!updatedb --localpaths="$VP_SRC_DIRS" --output=$HOME/.vp.$SUBPROJECTNAME.$WORKSPACEID.db <CR> 
 command! -bang VPFSLocate
-   \ call fzf#run(fzf#wrap('vpfslocate', {'source': 'locate -d $HOME/.vp_db '.shellescape(<q-args>) }, <bang>0))
+   \ call fzf#run(fzf#wrap('vpfslocate', {'source': 'locate -d $HOME/.vp.$SUBPROJECTNAME.$WORKSPACEID.db '.shellescape(<q-args>) }, <bang>0))
 
 
 " --------
