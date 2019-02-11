@@ -47,18 +47,23 @@ then
     export TERM="xterm-256color"
 fi
 
-export PATH=$HOME/bin/:$PATH
-export EDITOR=$(which vim)
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
-
-# Project aliases
-source $HOME/.aliases.zsh
-
 # If inside tmux, set tmux-exported variables
 if [ "x$TMUX" != "x" ]; then
     eval $(/usr/intel/bin/tmux showenv -s)
 fi
+
+alias vim=/usr/intel/bin/vim
+
+export EDITOR=vim
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# Project aliases
+source $HOME/.aliases.zsh
+
+export PATH=$HOME/bin/:$PATH
+
+__git_files () {
+    _wanted files expl 'local files' _files
+}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
