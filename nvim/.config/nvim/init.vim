@@ -217,6 +217,9 @@ endif
 " Differences vim/nvim
 if !has('nvim')
 	set encoding=utf-8
+else
+    let g:python_host_prog = "/usr/intel/bin/python2.7.15"
+    let g:python3_host_prog = "/usr/intel/bin/python3.6.3a"
 endif
 
 
@@ -297,7 +300,7 @@ command! -bang -nargs=* VPCS
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
   \   <bang>0)
 
-map <F6>    :!updatedb --localpaths="$VP_SRC_DIRS" --output=$HOME/.vp.$SUBPROJECTNAME.$WORKSPACEID.db <CR> 
+map <F6>    :!updatedb --localpaths="$VP_SRC_DIRS" --output=$HOME/.vp.$SUBPROJECTNAME.$WORKSPACEID.db <CR>
 command! -bang VPFSLocate
    \ call fzf#run(fzf#wrap('vpfslocate', {'source': 'locate -d $HOME/.vp.$SUBPROJECTNAME.$WORKSPACEID.db '.shellescape(<q-args>) }, <bang>0))
 
