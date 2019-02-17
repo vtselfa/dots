@@ -26,12 +26,6 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 
-"Syntax and errors highlighter
-Plug 'scrooloose/syntastic'
-	let g:syntastic_always_populate_loc_list = 1
-	nnoremap <F5> :SyntasticCheck<CR>
-
-
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
@@ -42,8 +36,6 @@ Plug 'junegunn/fzf.vim'
 " Very good autocompletion
 Plug 'Valloric/YouCompleteMe'
 	autocmd FileType python,c,cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
-	highlight YcmErrorSection ctermbg=0 ctermfg=9
-	highlight YcmWarningSection ctermbg=0 ctermfg=220
     let g:ycm_always_populate_location_list = 1
     let g:ycm_max_diagnostics_to_display = 150
 
@@ -88,14 +80,14 @@ Plug 'sjl/gundo.vim'
 
 
 " Airline
-Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
 	set laststatus=2
 	set noshowmode
 	let g:airline_powerline_fonts = 1
 	let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#show_splits = 0
 	let g:airline_theme='murmur'
-	set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 9
+
 
 " Airline themes
 Plug 'vim-airline/vim-airline-themes'
@@ -115,27 +107,20 @@ Plug 'chrisbra/Colorizer'
 
 " CSV
 Plug 'chrisbra/csv.vim'
-	highlight CSVColumnOdd ctermbg=blue ctermfg=black guifg=Black guibg=#88afff
-	highlight CSVColumnEven ctermbg=white ctermfg=black guifg=Black guibg=White
-	highlight CSVColumnHeaderOdd cterm=bold,underline gui=bold,underline ctermbg=blue ctermfg=88 guifg=#870000 guibg=#87afff
-	highlight CSVColumnHeaderEven cterm=bold,underline gui=bold,underline ctermbg=white ctermfg=88 guifg=#870000 guibg=White
 
 
 " Mark multiple words and all their occurences with different colors
 Plug 'inkarkat/vim-ingo-library'
-Plug 'inkarkat/vim-mark'
-" Defines <leader> m,n,r,*,/
+Plug 'inkarkat/vim-mark' " Defines <leader> m,n,r,*,/
 
 
 " +/- vcs signs
 Plug 'mhinz/vim-signify'
-	highlight SignColumn guibg=lightgrey ctermbg=237
-	highlight SignifySignDelete ctermbg=237 ctermfg=9 guifg=Red guibg=Lightgrey
-	highlight SignifySignAdd    ctermbg=237 ctermfg=34
-	highlight SignifySignChange ctermbg=237 ctermfg=227 guifg=Blue guibg=Lightgrey
-	let g:signify_vcs_list = ['git', 'svn']
-	let g:signify_sign_change = '~'
-	let g:signify_sign_delete_first_line = '‾'
+	let g:signify_vcs_list = ['git']
+	let g:signify_sign_change = '!'
+	let g:signify_sign_add = '✚'
+	let g:signify_sign_delete = '▁'
+	let g:signify_sign_delete_first_line = '▔'
 
 
 " Enable repeating supported plugin maps
@@ -170,12 +155,9 @@ call plug#end()
 " General options
 " ---------------
 
-colorscheme desert
-set nocompatible	" Be iMproved
-if !has('nvim')
-	set encoding=utf-8
-endif
 syntax on			" Sintax highlighting
+set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 11
+set nocompatible	" Be iMproved
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching
 set ignorecase		" Ignore case when searching brackets.
@@ -191,13 +173,9 @@ set backspace=eol,start,indent	" Configure backspace so it acts as it should act
 set whichwrap+=<,>,h,l			" Configure arrows so they acts as it should act
 set mat=2						" How many tenths of a second to blink when matching brackets
 set tabpagemax=50				" Maximum number of open tabs
+set guitablabel=%t              " Don't show the path in tabs
 set noswapfile					" Turn off annoying swapfiles
 let g:tex_flavor = "latex"		" Always expect LaTeX code (instead of plain TeX code) within .tex files
-
-" Truecolor
-set termguicolors
-let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
-let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
 
 " Indentation
 set expandtab
@@ -207,6 +185,11 @@ set shiftwidth=4	" How many positions [<] and [>] indent or deindent
 set breakindent		" Word wrapping mantaining indentation
 set showbreak=....	" What is shown in wrapped lines
 set linebreak		" Only wrap at a character in the 'breakat' option
+
+" Folding
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
+set foldcolumn=0
 
 " Move Backup Files to ~/.nvim/sessions
 silent !mkdir -p ~/.vim/sessions
@@ -225,26 +208,16 @@ set wildmenu
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.o
 set history=1000         " remember more commands and search history
 
-" GVim
+" Remove the menus from gvim
 if has('gui_running')
-	" Remove menus
 	set guioptions-=T
 	set guioptions-=m
 endif
 
-" Folding
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
-
-" Diff mode
-highlight DiffAdd    ctermfg=0 ctermbg=119
-highlight DiffDelete ctermfg=0 ctermbg=203
-highlight DiffChange ctermfg=0 ctermbg=159
-highlight DiffText   ctermfg=9 ctermbg=81
-hi VertSplit ctermbg=237
-hi Folded cterm=bold ctermbg=237 ctermfg=15
-hi FoldColumn ctermbg=237 ctermfg=15
-set fdc=0
+" Differences vim/nvim
+if !has('nvim')
+	set encoding=utf-8
+endif
 
 
 
@@ -256,7 +229,7 @@ set fdc=0
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 "Delete trailing whitespaces on source files on write
-autocmd FileType c,cpp,java,php,python,tex autocmd BufWritePre <buffer> :%s/\s\+$//e
+autocmd FileType c,cpp,java,php,python,tex,vim autocmd BufWritePre <buffer> :%s/\s\+$//e
 
 
 
@@ -272,6 +245,8 @@ nnoremap <leader>w :set wrap!<CR>
 " p -> togle paste
 nnoremap <leader>p :set paste!<CR>
 
+" FZF mappings
+nnoremap <leader>tt :Windows<CR>
 nnoremap <leader>bb :Buffers<CR>
 nnoremap <leader>bl :BLines<CR>
 nnoremap <leader>ff :FZF<CR>
@@ -287,6 +262,16 @@ nnoremap <silent> <Plug>FixIt :YcmCompleter FixIt<CR>
     \:call repeat#set("\<Plug>FixIt")<CR>
 nmap <leader>fi <Plug>FixIt
 
+" Tabclose, next and prev
+nnoremap <silent> <Plug>TabClose :tabclose<CR>
+    \:call repeat#set("\<Plug>TabClose")<CR>
+nmap <leader>tc <Plug>TabClose
+nnoremap <silent> <Plug>TabNext :tabnext<CR>
+    \:call repeat#set("\<Plug>TabNext")<CR>
+nmap <leader>tn <Plug>TabNext
+nnoremap <silent> <Plug>TabPrev :tabprev<CR>
+    \:call repeat#set("\<Plug>TabPrev")<CR>
+nmap <leader>tp <Plug>TabPrev
 
 " Edit macro
 nmap <Leader>em :call EditMacro()<CR> <Plug>em
@@ -345,8 +330,46 @@ endif
 "
 " Clearshit mappings
 "
+
 map <F7>    :!cleartool unco %:p <CR>
 map <F8>    :!cleartool co -nc -unr -nmaster -nwa -pti %:p <CR>
 map <F9>    :!cleartool ci -nwa -pti %:p <CR>
 map <F10>   :!cleartool co -nc %:p:h && cleartool mkelem -ci -pti %:p <CR>
 map <F11>   :!cleartool mkelem -ci -pti %:p <CR>
+
+
+"
+" Colors
+"
+
+" Truecolor
+set termguicolors
+
+" Colorscheme
+colorscheme desert
+
+" Signify
+highlight SignColumn              guibg=#1c1c1c ctermbg=0
+highlight SignifySignDelete       cterm=bold ctermbg=0     ctermfg=1 guifg=#CC0000 gui=bold guibg=#1c1c1c
+highlight SignifySignChangeDelete cterm=bold ctermbg=0     ctermfg=1 guifg=#CC0000 gui=bold guibg=#1c1c1c
+highlight SignifySignAdd          cterm=bold ctermbg=0     ctermfg=2 guifg=#00FF00 gui=bold guibg=#1c1c1c
+highlight SignifySignChange       cterm=bold ctermbg=0     ctermfg=3 guifg=#fbff00 gui=bold guibg=#1c1c1c
+
+" Diff mode
+highlight DiffAdd    ctermfg=0   ctermbg=149 guibg=#acc267 guifg=Black
+highlight DiffDelete ctermfg=211 ctermbg=211 guibg=#fb9fb1 guifg=#fb9fb1 gui=None
+highlight DiffChange ctermfg=0   ctermbg=153 guibg=#b5dff6 guifg=Black
+highlight DiffText   ctermfg=1   ctermbg=81  guibg=#72D5FE guifg=#CC0000 cterm=None gui=None
+highlight VertSplit  ctermbg=237
+highlight Folded     ctermbg=237 ctermfg=15 cterm=bold
+highlight FoldColumn ctermbg=237 ctermfg=15
+
+" YouCompleteMe
+highlight YcmErrorSection ctermbg=0 ctermfg=9
+highlight YcmWarningSection ctermbg=0 ctermfg=220
+
+" CSV plugin
+highlight CSVColumnOdd ctermbg=blue ctermfg=black guifg=Black guibg=#88afff
+highlight CSVColumnEven ctermbg=white ctermfg=black guifg=Black guibg=White
+highlight CSVColumnHeaderOdd cterm=bold,underline gui=bold,underline ctermbg=blue ctermfg=88 guifg=#870000 guibg=#87afff
+highlight CSVColumnHeaderEven cterm=bold,underline gui=bold,underline ctermbg=white ctermfg=88 guifg=#870000 guibg=White

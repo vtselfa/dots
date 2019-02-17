@@ -52,7 +52,11 @@ if [ "x$TMUX" != "x" ]; then
     eval $(/usr/intel/bin/tmux showenv -s)
 fi
 
-alias vim=/usr/intel/bin/vim
+if [ -x $HOME/bin/nvim ]; then
+    alias vim=$HOME/bin/nvim
+else
+    alias vim=/usr/intel/bin/vim
+fi
 
 export EDITOR=vim
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
