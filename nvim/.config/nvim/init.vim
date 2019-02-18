@@ -146,20 +146,22 @@ Plug 'vim-scripts/visualrepeat'
 Plug 'tpope/vim-surround'
 
 
-"Plug 'vim-scripts/ingo-library'
-
-
 Plug 'rhysd/vim-clang-format'
-" map to <Leader>cf in C++ code
-autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
-autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+	autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+	autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 
 
 " Vim sugar for the UNIX shell commands that need it the most.
 Plug 'tpope/vim-eunuch'
 
+
 " Easily search for, substitute, and abbreviate multiple variants of a word
 Plug 'tpope/vim-abolish'
+
+
+" Adds automated view session creation/restoration when editing a buffer, across Vim sessions and window life cycles
+Plug 'zhimsel/vim-stay'
+	set viewoptions=cursor,folds,slash,unix
 
 
 call plug#end()
