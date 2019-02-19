@@ -156,7 +156,6 @@ call plug#end()
 " ---------------
 
 syntax on			" Sintax highlighting
-set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 11
 set nocompatible	" Be iMproved
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching
@@ -208,8 +207,9 @@ set wildmenu
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.o
 set history=1000         " remember more commands and search history
 
-" Remove the menus from gvim
+" Config for gvim
 if has('gui_running')
+    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 11
 	set guioptions-=T
 	set guioptions-=m
 endif
@@ -217,6 +217,10 @@ endif
 " Differences vim/nvim
 if !has('nvim')
 	set encoding=utf-8
+    if exists('$TMUX')
+        let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+        let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+    endif
 else
     let g:python_host_prog = "/usr/intel/bin/python2.7.15"
     let g:python3_host_prog = "/usr/intel/bin/python3.6.3a"
