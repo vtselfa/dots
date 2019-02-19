@@ -339,7 +339,7 @@ endif
 "
 
 map <F7>    :!cleartool unco %:p <CR>
-map <F8>    :!cleartool co -nc -unr -nmaster -nwa -pti %:p <CR>
+map <F8>    :set noreadonly <CR> :!cleartool co -nc -unr -nmaster -nwa -pti %:p <CR>
 map <F9>    :!cleartool ci -nwa -pti %:p <CR>
 map <F10>   :!cleartool co -nc %:p:h && cleartool mkelem -ci -pti %:p <CR>
 map <F11>   :!cleartool mkelem -ci -pti %:p <CR>
