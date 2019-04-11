@@ -87,6 +87,7 @@ Plug 'vim-airline/vim-airline'
 	let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#show_splits = 0
 	let g:airline_theme='murmur'
+    let g:airline#extensions#tabline#fnamemod = ':t'
 
 
 " Airline themes
