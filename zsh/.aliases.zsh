@@ -88,7 +88,7 @@ function ctdiffco() {
     echo ":edit ${files1[1]}" >> $TEMP
     echo ":diffsplit ${files2[1]}" >> $TEMP
     echo ":wincmd w" >> $TEMP
-    for ((i=1; i<${#files1}; i++)); do
+    for ((i=2; i<=${#files1}; i++)); do
         # Skip files that are equal
         cmp --silent ${files1[i]} ${files2[i]}
         if [ $? -eq 0 ]; then continue; fi
@@ -102,9 +102,32 @@ function ctdiffco() {
 
 
 function ctdiffb() {
-    filename=$(basename -- "$1")
-    extension="${filename##*.}"
-    vimdiff -c 'windo set ft=$extension' $1@@/main/$INTEGRATION_BRANCH/$(currbranch)/LATEST $1
+    if [[ $# -eq 0 ]]; then
+        files1=($(lsco | awk -F\" '/checkout/{printf("%s ", $2)}; END{printf("\n")}'))
+    else
+        files1=("${@:1}")
+    fi
+    files2=()
+
+    for file in $files1; do
+        files2+="${file}@@/main/$INTEGRATION_BRANCH/$(currbranch)/LATEST"
+    done
+
+    TEMP=$(mktemp)
+    echo ":set diffopt=filler,vertical" > $TEMP
+    echo ":edit ${files1[1]}" >> $TEMP
+    echo ":diffsplit ${files2[1]}" >> $TEMP
+    echo ":wincmd w" >> $TEMP
+    for ((i=2; i<=${#files1}; i++)); do
+        # Skip files that are equal
+        cmp --silent ${files1[i]} ${files2[i]}
+        if [ $? -eq 0 ]; then continue; fi
+        echo ":tabe ${files1[i]}" >> $TEMP
+        echo ":diffsplit ${files2[i]}" >> $TEMP
+        echo ":wincmd w" >> $TEMP
+    done
+    cat  $TEMP
+    gvim -s $TEMP
 }
 
 
