@@ -5,7 +5,7 @@ ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="candy"
+# ZSH_THEME="spaceship"
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -31,7 +31,7 @@ KSH_ARRAYS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git)
+plugins=()
 
 source $ZSH/oh-my-zsh.sh
 
@@ -47,19 +47,13 @@ then
     export TERM="xterm-256color"
 fi
 
-export EDITOR=$(which vim)
+export PATH=${HOME}/.cargo/bin:${PATH}
+export EDITOR=$(which nvim)
 export LANG=es_ES.utf8
 
 alias csvpager='vim -c "set ft=csv" -c %ArrangeColumn -c 1split -c "wincmd j"'
 
-# Quick ps in csv format
-psv() {
-	ps -Ao "pid,user,pcpu,pmem,comm" --sort -pcpu,-pmem | sed 's/^ \+//g; s/ \+$//g; s/ \+/ /g' | awk '{for (i=1; i<NF; i++){ if(i<=4) printf("%s|", $i); else printf("%s ", $i)} print $i}' | head -10 | csvlook -d '|'
-}
-
-fixenv() {
-	eval $(tmux showenv -s SSH_AUTH_SOCK)
-	eval $(tmux showenv -s DISPLAY)
-}
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+eval "$(starship init zsh)"
+

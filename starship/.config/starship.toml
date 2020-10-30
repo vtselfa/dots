@@ -1,0 +1,16 @@
+[python]
+format = '[${symbol}${pyenv_prefix}${version}( \($virtualenv\))]($style) '
+
+[rust]
+format = '[$symbol$version]($style)'
+
+[package]
+disabled = true
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+style = "bold green"
+
+[directory]
+truncate_to_repo = false
+style = "bold white"
