@@ -6,4 +6,15 @@
 [core]
 	editor = nvim
 [merge]
-	tool = meld
+	conflictstyle = diff3
+
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	br = branch
+	fixup = commit --amend --no-edit
+	diffc = diff --cached
+	sst = submodule status
+	sup = submodule update --init --recursive
+	allpatches = log -p -M --follow --stat
