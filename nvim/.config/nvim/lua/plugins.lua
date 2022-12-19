@@ -1,6 +1,8 @@
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
 
+    use { "williamboman/mason.nvim", config = function() require("mason").setup() end }
+
     -- Lazy loading:
     -- Load on specific commands
     use { 'tpope/vim-dispatch', opt = true, cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } }
@@ -45,7 +47,7 @@ return require('packer').startup(function(use)
         'nvim-telescope/telescope.nvim', branch = '0.1.x',
         requires = {
             'nvim-lua/plenary.nvim',
-            'natecraddock/telescope-zf-native.nvim',
+            {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }, -- Faster sorter with fzf syntax
             'nvim-telescope/telescope-ui-select.nvim' -- Use telescope for vim.ui.select
         }
     }

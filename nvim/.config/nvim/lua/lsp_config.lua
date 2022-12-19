@@ -147,6 +147,12 @@ require 'lspconfig'.sumneko_lua.setup {
     },
 }
 
+require 'lspconfig'.jsonls.setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities,
+}
+
 -- Rust LSP, via rust-tools
 local rt = require("rust-tools")
 rt.setup({
