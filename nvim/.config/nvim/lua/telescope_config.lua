@@ -2,6 +2,8 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local actions_layout = require("telescope.actions.layout")
 local transform_mod = require("telescope.actions.mt").transform_mod
+local lga_actions = require("telescope-live-grep-args.actions")
+local fb_actions = require "telescope".extensions.file_browser.actions
 
 -- From https://github.com/rebelot/dotfiles/blob/master/nvim/lua/plugins/telescope.lua
 local function multiopen(prompt_bufnr, method)
@@ -24,7 +26,7 @@ local function multiopen(prompt_bufnr, method)
         require("telescope.pickers").on_close_prompt(prompt_bufnr)
         pcall(vim.api.nvim_set_current_win, picker.original_win_id)
 
-        for i, entry in ipairs(multi_selection) do
+        for _, entry in ipairs(multi_selection) do
             local filename, row, col
 
             if entry.path or entry.filename then
@@ -55,10 +57,10 @@ local function multiopen(prompt_bufnr, method)
                 if not vim.api.nvim_buf_get_option(entry_bufnr, "buflisted") then
                     vim.api.nvim_buf_set_option(entry_bufnr, "buflisted", true)
                 end
-                local command = i == 1 and "buffer" or edit_buf_cmd_map[method]
+                local command = edit_buf_cmd_map[method]
                 pcall(vim.cmd, string.format("%s %s", command, vim.api.nvim_buf_get_name(entry_bufnr)))
             else
-                local command = i == 1 and "edit" or edit_file_cmd_map[method]
+                local command = edit_file_cmd_map[method]
                 if vim.api.nvim_buf_get_name(0) ~= filename or command ~= "edit" then
                     filename = require("plenary.path"):new(vim.fn.fnameescape(filename)):normalize(vim.loop.cwd())
                     pcall(vim.cmd, string.format("%s %s", command, filename))
@@ -120,11 +122,38 @@ require('telescope').setup {
                 ["<C-t>"] = custom_actions.multi_selection_open_tab,
                 ["<CR>"] = custom_actions.multi_selection_open,
             }
-        }
+        },
     },
+    extensions = {
+        live_grep_args = {
+            auto_quoting = true, -- enable/disable auto-quoting
+            mappings = { -- extend mappings
+                i = {
+                    ["<C-q>"] = lga_actions.quote_prompt(),
+                    ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+                    ["<C-e>"] = lga_actions.quote_prompt({ postfix = " -t " }),
+                    ["<C-f>"] = actions.to_fuzzy_refine,
+                },
+            },
+        },
+        file_browser = {
+            mappings = { -- extend mappings
+                i = {
+                    ["<C-h>"] = fb_actions.toggle_hidden,
+                    ["<C-Space>"] = fb_actions.goto_parent_dir,
+                },
+                n = {
+                    ["<C-h>"] = fb_actions.toggle_hidden,
+                    ["<C-Space>"] = fb_actions.goto_parent_dir,
+                },
+            },
+        }
+    }
 }
 require('telescope').load_extension('fzf')
 require("telescope").load_extension("ui-select")
+require("telescope").load_extension("file_browser")
+require("telescope").load_extension("live_grep_args")
 
 local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
@@ -132,16 +161,16 @@ local utils = require('telescope.utils')
 -- Find Files (including hidden ones)
 vim.keymap.set('n', '<leader>ff', function() builtin.find_files { hidden = true } end, {})
 
--- Find files in the directory of the Current buffer
-vim.keymap.set('n', '<leader>fc', function()
-    builtin.find_files { cwd = utils.buffer_dir() }
-end, {})
+-- Find files in the directory of the Current buffer using a telescope-based file browser
+vim.keymap.set('n', '<leader>fc',
+    function() require('telescope').extensions.file_browser.file_browser { path = utils.buffer_dir() } end
+    , {})
 
 -- Find Git files
 vim.keymap.set('n', '<leader>fg', builtin.git_files, {})
 
 -- Search for word Live
-vim.keymap.set('n', '<leader>sl', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>sl', require("telescope").extensions.live_grep_args.live_grep_args, {})
 
 -- Search for Word
 vim.keymap.set('n', '<leader>sw', builtin.grep_string, {})

@@ -1,6 +1,7 @@
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
 
+    -- Package manager for easily manage external editor tooling such as LSP servers, DAP servers, linters, and formatters
     use { "williamboman/mason.nvim", config = function() require("mason").setup() end }
 
     -- Lazy loading:
@@ -47,9 +48,15 @@ return require('packer').startup(function(use)
         'nvim-telescope/telescope.nvim', branch = '0.1.x',
         requires = {
             'nvim-lua/plenary.nvim',
-            {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }, -- Faster sorter with fzf syntax
+            { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }, -- Faster sorter with fzf syntax
+            { "nvim-telescope/telescope-live-grep-args.nvim" }, -- Pass custom arguments to rg during live grep
             'nvim-telescope/telescope-ui-select.nvim' -- Use telescope for vim.ui.select
         }
+    }
+
+    -- File browser basod on telescope
+    use { "nvim-telescope/telescope-file-browser.nvim",
+        requires = { 'nvim-telescope/telescope.nvim' },
     }
 
     -- Select tab using telescope
@@ -62,6 +69,12 @@ return require('packer').startup(function(use)
             }
         end
     }
+
+    use({
+        "sindrets/diffview.nvim",
+        requires = "nvim-lua/plenary.nvim",
+        cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+    })
 
     -- Easily comment out lines
     use { 'tomtom/tcomment_vim' }
@@ -147,10 +160,30 @@ return require('packer').startup(function(use)
     -- Side panel with the document symbols
     use { 'stevearc/aerial.nvim' }
 
-    -- Package manager for easily manage external editor tooling such as LSP servers, DAP servers, linters, and formatters
-    use { "williamboman/mason.nvim", config = function()
-        require("mason").setup()
-    end
+    use { "rcarriga/nvim-notify",
+        event = "UIEnter",
+        config = function()
+            local notify = require("notify")
+            notify.setup {}
+            vim.notify = notify
+
+            local vim_notify = vim.notify
+            vim.notify = function(msg, ...)
+                if msg:match("warning: multiple different client offset_encodings") then
+                    return
+                end
+
+                vim_notify(msg, ...)
+            end
+
+            vim.keymap.set("n", "<esc>", function()
+                notify.dismiss()
+                vim.cmd.noh()
+            end)
+            vim.lsp.handlers["window/showMessage"] = function(_, method, params, _)
+                vim.notify(method.message, params.type)
+            end
+        end,
     }
 
     -- use { 'suan/vim-instant-markdown' }, {'for': 'markdown'}
