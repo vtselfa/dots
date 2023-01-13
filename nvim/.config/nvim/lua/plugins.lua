@@ -54,7 +54,7 @@ return require('packer').startup(function(use)
         }
     }
 
-    -- File browser basod on telescope
+    -- File browser based on telescope
     use { "nvim-telescope/telescope-file-browser.nvim",
         requires = { 'nvim-telescope/telescope.nvim' },
     }
@@ -184,6 +184,29 @@ return require('packer').startup(function(use)
                 vim.notify(method.message, params.type)
             end
         end,
+    }
+
+    -- YAML lsp config and schema autodetection and download
+    use {
+        "someone-stole-my-name/yaml-companion.nvim",
+        requires = {
+            { "neovim/nvim-lspconfig" },
+            { "nvim-lua/plenary.nvim" },
+            { "nvim-telescope/telescope.nvim" },
+        },
+        config = function()
+            require("telescope").load_extension("yaml_schema")
+        end,
+    }
+
+    -- Simple tools to help developers working with YAML
+    use {
+        "cuducos/yaml.nvim",
+        ft = { "yaml" }, -- optional
+        requires = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-telescope/telescope.nvim" -- optional
+        },
     }
 
     -- use { 'suan/vim-instant-markdown' }, {'for': 'markdown'}

@@ -170,3 +170,12 @@ rt.setup({
         auto = false,
     },
 })
+
+local cfg = require("yaml-companion").setup({
+    lspconfig = {
+        on_attach = on_attach,
+        flags = lsp_flags,
+        capabilities = capabilities,
+    },
+})
+require("lspconfig")["yamlls"].setup(cfg)
