@@ -62,6 +62,7 @@ local on_attach = function(client, bufnr)
     end, bufopts)
     vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
     -- if client.server_capabilities.documentFormattingProvider then
         vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
