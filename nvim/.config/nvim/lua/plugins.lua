@@ -1,3 +1,15 @@
+local ensure_packer = function()
+    local fn = vim.fn
+    local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
+    if fn.empty(fn.glob(install_path)) > 0 then
+        fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
+        vim.cmd [[packadd packer.nvim]]
+        return true
+    end
+    return false
+end
+
+local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
 
@@ -48,9 +60,9 @@ return require('packer').startup(function(use)
         'nvim-telescope/telescope.nvim', branch = '0.1.x',
         requires = {
             'nvim-lua/plenary.nvim',
-            { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }, -- Faster sorter with fzf syntax
-            { "nvim-telescope/telescope-live-grep-args.nvim" }, -- Pass custom arguments to rg during live grep
-            'nvim-telescope/telescope-ui-select.nvim' -- Use telescope for vim.ui.select
+            { 'nvim-telescope/telescope-fzf-native.nvim',    run = 'make' }, -- Faster sorter with fzf syntax
+            { "nvim-telescope/telescope-live-grep-args.nvim" },              -- Pass custom arguments to rg during live grep
+            'nvim-telescope/telescope-ui-select.nvim'                        -- Use telescope for vim.ui.select
         }
     }
 
@@ -75,6 +87,11 @@ return require('packer').startup(function(use)
         requires = "nvim-lua/plenary.nvim",
         cmd = { "DiffviewOpen", "DiffviewFileHistory" },
     })
+
+    -- Diffs arbitrary selections inside vim
+    use { 'rickhowe/spotdiff.vim',
+        requires = 'rickhowe/diffchar.vim',
+    }
 
     -- Easily comment out lines
     use { 'tomtom/tcomment_vim' }
@@ -209,5 +226,20 @@ return require('packer').startup(function(use)
         },
     }
 
-    -- use { 'suan/vim-instant-markdown' }, {'for': 'markdown'}
+    use { "mickael-menu/zk-nvim" }
+
+    use { "jose-elias-alvarez/null-ls.nvim",
+        requires = { "nvim-lua/plenary.nvim" },
+    }
+
+    use { 'chentoast/marks.nvim' }
+
+    use({ 'toppair/peek.nvim', run = 'deno task --quiet build:fast' })
+    -- use { 'suan/vim-instant-markdown' , {'for': 'markdown'}}
+
+    -- Automatically set up your configuration after cloning packer.nvim
+    -- Put this at the end after all plugins
+    if packer_bootstrap then
+        require('packer').sync()
+    end
 end)

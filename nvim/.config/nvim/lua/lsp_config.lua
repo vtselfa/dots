@@ -9,10 +9,10 @@ end
 sign({ name = 'DiagnosticSignError', text = '' })
 sign({ name = 'DiagnosticSignWarn', text = '' })
 sign({ name = 'DiagnosticSignHint', text = '' })
-sign({ name = 'DiagnosticSignInfo', text = '' })
+sign({ name = 'DiagnosticSignInfo', text = '' })
 
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     update_in_insert = true,
     underline = false,
@@ -37,10 +37,9 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
 
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+vim.keymap.set('n', '<space>d', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>d', vim.diagnostic.setloclist, opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -64,9 +63,9 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
-    if client.server_capabilities.documentFormattingProvider then
+    -- if client.server_capabilities.documentFormattingProvider then
         vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
-    end
+    -- end
 end
 
 -- Temporary fix for inlay hints
@@ -120,7 +119,7 @@ require 'lspconfig'.bashls.setup {
     capabilities = capabilities,
 }
 
-require 'lspconfig'.sumneko_lua.setup {
+require 'lspconfig'.lua_ls.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
@@ -179,3 +178,43 @@ local cfg = require("yaml-companion").setup({
     },
 })
 require("lspconfig")["yamlls"].setup(cfg)
+
+-- Zettelkasten
+require("zk").setup({
+    -- can be "telescope", "fzf" or "select" (`vim.ui.select`)
+    picker = "telescope",
+    lsp = {
+        -- `config` is passed to `vim.lsp.start_client(config)`
+        config = {
+            cmd = { "zk", "lsp" },
+            name = "zk",
+            on_attach = on_attach,
+            flags = lsp_flags,
+            capabilities = capabilities,
+        },
+        -- automatically attach buffers in a zk notebook that match the given filetypes
+        auto_attach = {
+            enabled = true,
+            filetypes = { "markdown" },
+        },
+    },
+})
+
+local null_ls = require("null-ls")
+null_ls.setup({
+    sources = {
+        null_ls.builtins.code_actions.refactoring,
+        -- shell
+        null_ls.builtins.code_actions.shellcheck,
+        -- protobuf
+        null_ls.builtins.diagnostics.buf,
+        null_ls.builtins.diagnostics.protolint,
+        -- python
+        null_ls.builtins.diagnostics.ruff,
+        null_ls.builtins.diagnostics.pylint,
+        null_ls.builtins.formatting.black,
+        -- spell
+        null_ls.builtins.completion.spell,
+    },
+    on_attach = on_attach,
+})

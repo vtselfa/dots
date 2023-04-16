@@ -201,3 +201,6 @@ vim.keymap.set('n', '<leader>tt', require('telescope-tabs').list_tabs, {})
 
 -- Tab Return (to the previous one)
 vim.keymap.set('n', '<space>t', require('telescope-tabs').go_to_previous, {})
+
+-- Marks
+vim.keymap.set('n', '<leader>fm', builtin.marks, {})

@@ -65,12 +65,12 @@ local function wininput(opts, on_confirm, win_opts)
 end
 
 -- override vim.ui.input ( telescope rename/create, lsp rename, etc )
-vim.ui.input = function(opts, on_confirm)
-    -- intercept opts and on_confirm,
-    -- check buffer options, filetype, etc and set window options accordingly.
-    wininput(
-        opts,
-        on_confirm,
-        { border = "rounded", relative = "cursor", row = 1, col = 0, width = 0 }
-    )
-end
+-- vim.ui.input = function(opts, on_confirm)
+--     -- intercept opts and on_confirm,
+--     -- check buffer options, filetype, etc and set window options accordingly.
+--     wininput(
+--         opts,
+--         on_confirm,
+--         { border = "rounded", relative = "cursor", row = 1, col = 0, width = 0 }
+--     )
+-- end
