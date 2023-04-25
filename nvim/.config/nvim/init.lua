@@ -47,6 +47,9 @@ vim.opt.linebreak = true
 vim.opt.breakindent = true
 vim.opt.showbreak = "...."
 
+-- Concealing
+vim.opt.concealcursor = ""
+
 -- Colors
 vim.opt.termguicolors = true
 

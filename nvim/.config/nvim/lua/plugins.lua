@@ -234,6 +234,14 @@ return require('packer').startup(function(use)
 
     use { 'chentoast/marks.nvim' }
 
+    use {
+        "ThePrimeagen/refactoring.nvim",
+        requires = {
+            { "nvim-lua/plenary.nvim" },
+            { "nvim-treesitter/nvim-treesitter" }
+        }
+    }
+
     use({ 'toppair/peek.nvim', run = 'deno task --quiet build:fast' })
     -- use { 'suan/vim-instant-markdown' , {'for': 'markdown'}}
 
