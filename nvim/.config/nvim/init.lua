@@ -48,6 +48,7 @@ vim.opt.breakindent = true
 vim.opt.showbreak = "...."
 
 -- Concealing
+vim.opt.conceallevel = 2
 vim.opt.concealcursor = ""
 
 -- Colors
@@ -66,12 +67,12 @@ vim.g.tex_flavor = "latex"
 require('plugins')
 require('autocommands')
 require('telescope_config')
-require('lsp_config')
 require('cmp_config')
+require('lsp_config')
 require('treesitter_config')
 require('nvim_tree_config')
 require('insert_config')
 require('aerial_config')
-require('luasnippets_config')
 require('lualine_config')
 require('zk_config')
+require('indent_blankline_config')

@@ -1,6 +1,6 @@
 vim.api.nvim_create_autocmd({ "FileType" }, {
     group = vim.api.nvim_create_augroup('delete_trailing_spaces_on_save', { clear = true }),
-    pattern = { 'c', 'cpp', 'python', 'tex', 'vim', 'lua' },
+    pattern = { 'c', 'cpp', 'python', 'tex', 'vim', 'lua', 'yaml' },
     command = [[autocmd BufWritePre <buffer> :%s/\s\+$//e]]
 })
 

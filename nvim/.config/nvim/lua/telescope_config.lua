@@ -103,10 +103,11 @@ end
 require('telescope').setup {
     defaults = {
         layout_config = { preview_width = 0.5 },
+        path_display = {"absolute"},
         mappings = {
             i = {
-                ["<C-Down>"] = actions.preview_scrolling_down,
-                ["<C-Up>"] = actions.preview_scrolling_up,
+                ["<S-Down>"] = actions.preview_scrolling_down,
+                ["<S-Up>"] = actions.preview_scrolling_up,
                 ["<C-o>"] = actions_layout.toggle_preview,
                 ["<C-v>"] = stopinsert(custom_actions.multi_selection_open_vertical),
                 ["<C-s>"] = stopinsert(custom_actions.multi_selection_open_horizontal),
@@ -114,8 +115,8 @@ require('telescope').setup {
                 ["<CR>"] = stopinsert(custom_actions.multi_selection_open),
             },
             n = {
-                ["<C-Down>"] = actions.preview_scrolling_down,
-                ["<C-Up>"] = actions.preview_scrolling_up,
+                ["<S-Down>"] = actions.preview_scrolling_down,
+                ["<S-Up>"] = actions.preview_scrolling_up,
                 ["<C-o>"] = actions_layout.toggle_preview,
                 ["<C-v>"] = custom_actions.multi_selection_open_vertical,
                 ["<C-s>"] = custom_actions.multi_selection_open_horizontal,
@@ -124,12 +125,29 @@ require('telescope').setup {
             }
         },
     },
+    pickers = {
+        current_buffer_tags = { fname_width = 100, },
+        jumplist = { fname_width = 100, },
+        loclist = { fname_width = 100, },
+        lsp_definitions = { fname_width = 100, },
+        lsp_document_symbols = { fname_width = 100, },
+        lsp_dynamic_workspace_symbols = { fname_width = 100, },
+        lsp_implementations = { fname_width = 100, },
+        lsp_incoming_calls = { fname_width = 100, },
+        lsp_outgoing_calls = { fname_width = 100, },
+        lsp_references = { fname_width = 1000, },
+        lsp_type_definitions = { fname_width = 100, },
+        lsp_workspace_symbols = { fname_width = 100, },
+        quickfix = { fname_width = 100, },
+        tags = { fname_width = 100, },
+    },
     extensions = {
         live_grep_args = {
             auto_quoting = true, -- enable/disable auto-quoting
-            mappings = { -- extend mappings
+            mappings = {
+                -- extend mappings
                 i = {
-                    ["<C-q>"] = lga_actions.quote_prompt(),
+                    ['<C-">'] = lga_actions.quote_prompt(),
                     ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
                     ["<C-e>"] = lga_actions.quote_prompt({ postfix = " -t " }),
                     ["<C-f>"] = actions.to_fuzzy_refine,
@@ -137,7 +155,8 @@ require('telescope').setup {
             },
         },
         file_browser = {
-            mappings = { -- extend mappings
+            mappings = {
+                -- extend mappings
                 i = {
                     ["<C-h>"] = fb_actions.toggle_hidden,
                     ["<C-Space>"] = fb_actions.goto_parent_dir,
@@ -157,6 +176,7 @@ require("telescope").load_extension("live_grep_args")
 
 local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
+local map = vim.keymap.set
 
 -- Find Files (including hidden ones)
 vim.keymap.set('n', '<leader>ff', function() builtin.find_files { hidden = true } end, {})
@@ -184,6 +204,9 @@ vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
 -- Search Command history
 vim.keymap.set('n', '<leader>sc', builtin.command_history, {})
 
+-- Search Command history
+vim.keymap.set('n', '<leader>ss', builtin.lsp_workspace_symbols, { desc = "Search symbols in the workspace" })
+
 -- Diagnostics
 vim.keymap.set('n', '<leader>dd', builtin.diagnostics, {})
 
@@ -204,3 +227,16 @@ vim.keymap.set('n', '<space>t', require('telescope-tabs').go_to_previous, {})
 
 -- Marks
 vim.keymap.set('n', '<leader>fm', builtin.marks, {})
+
+map("n", "<leader>fj", require("telescope.builtin").jumplist, { desc = "Telescope: Jumplist" })
+
+map("n", '<leader>s"', require("telescope.builtin").registers, { desc = "Telescope: Registers" })
+
+map("n", "<leader>T", function()
+    require("telescope.builtin").builtin({ include_extensions = true })
+end, { desc = "Telescope: List pickers" })
+
+map("n", "<leader>st", require("telescope.builtin").treesitter, { desc = "Telescope: Treesitter" })
+
+
+map("n", "<leader>sq", require("telescope.builtin").quickfix, { desc = "Telescope: Quickfix" })

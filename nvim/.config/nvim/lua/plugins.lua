@@ -16,9 +16,9 @@ return require('packer').startup(function(use)
     -- Package manager for easily manage external editor tooling such as LSP servers, DAP servers, linters, and formatters
     use { "williamboman/mason.nvim", config = function() require("mason").setup() end }
 
-    -- Lazy loading:
-    -- Load on specific commands
     use { 'tpope/vim-dispatch', opt = true, cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } }
+
+    use { 'tpope/vim-unimpaired' }
 
     -- Load on an autocommand event
     use { 'andymass/vim-matchup', event = 'VimEnter' }
@@ -99,20 +99,6 @@ return require('packer').startup(function(use)
     -- Configurations for Nvim LSP
     use { 'neovim/nvim-lspconfig' }
 
-    -- Autocompletion and snippets
-    use { 'hrsh7th/nvim-cmp',
-        requires = {
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-cmdline',
-            -- Snippets
-            'L3MON4D3/LuaSnip',
-            'saadparwaiz1/cmp_luasnip',
-            'rafamadriz/friendly-snippets',
-        }
-    }
-
     -- Rust support
     use { 'rust-lang/rust.vim', config = function()
         vim.g.rustfmt_autosave = 1 -- Run rustfmt on save
@@ -146,6 +132,9 @@ return require('packer').startup(function(use)
     -- Toggle between header and source
     use { 'vim-scripts/a.vim' }
 
+    -- Vim plugin to provide text objects to select a portion of the current line
+    use { 'kana/vim-textobj-line', requires = 'kana/vim-textobj-user' }
+
     -- Sudo
     use { 'chrisbra/SudoEdit.vim' }
 
@@ -160,19 +149,33 @@ return require('packer').startup(function(use)
     use { 'tpope/vim-repeat' }
 
     -- Add/modify surroundings " ' [] etc
-    use { 'tpope/vim-surround' }
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
 
     -- Vim sugar for the UNIX shell commands that need it the most.
     use { 'tpope/vim-eunuch' }
 
     -- Easily search for, substitute, and abbreviate multiple variants of a word
-    use { 'tpope/vim-abolish' }
+    use {
+        "tpope/vim-abolish",
+        config = function()
+            -- Disable coercion mappings. I use coerce.nvim for that.
+            vim.g.abolish_no_mappings = true
+        end,
+    }
 
     -- Updated cmake syntax
     use { 'pboettch/vim-cmake-syntax' }
 
     -- Vertical lines that indicate indentation level
-    use { 'Yggdroot/indentLine' }
+    use { "lukas-reineke/indent-blankline.nvim", }
 
     -- Side panel with the document symbols
     use { 'stevearc/aerial.nvim' }
@@ -228,7 +231,7 @@ return require('packer').startup(function(use)
 
     use { "mickael-menu/zk-nvim" }
 
-    use { "jose-elias-alvarez/null-ls.nvim",
+    use { "nvimtools/none-ls.nvim",
         requires = { "nvim-lua/plenary.nvim" },
     }
 
@@ -242,8 +245,107 @@ return require('packer').startup(function(use)
         }
     }
 
+    use { 'terrastruct/d2-vim' }
+
     use({ 'toppair/peek.nvim', run = 'deno task --quiet build:fast' })
-    -- use { 'suan/vim-instant-markdown' , {'for': 'markdown'}}
+
+    -- focus on a selected region while making the rest inaccessible
+    use { 'chrisbra/NrrwRgn',
+        config = function()
+            vim.cmd [[
+              command! -nargs=* -bang -range -complete=filetype NN
+                  \ :<line1>,<line2> call nrrwrgn#NrrwRgn('',<q-bang>)
+                  \ | set filetype=<args>
+            ]]
+        end,
+    }
+
+    -- Clipboard management
+    use {
+        "AckslD/nvim-neoclip.lua",
+        requires = {
+            { 'kkharji/sqlite.lua', module = 'sqlite' },
+        },
+        config = function()
+            require('neoclip').setup {
+                history = 5000,
+                enable_persistent_history = true,
+                continuous_sync = true,
+                on_paste = {
+                    close_telescope = false,
+                },
+            }
+            require("telescope").load_extension("neoclip")
+            require("telescope").load_extension("macroscope")
+        end,
+    }
+
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            'neovim/nvim-lspconfig',
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+            { 'L3MON4D3/LuaSnip', requires = { "rafamadriz/friendly-snippets" } },
+            'saadparwaiz1/cmp_luasnip',
+            "hrsh7th/cmp-nvim-lsp-signature-help",
+            "hrsh7th/cmp-nvim-lsp-document-symbol",
+            "andersevenrud/cmp-tmux",
+        }
+    }
+
+    use {
+        "onsails/lspkind-nvim",
+        config = function()
+            require("lspkind").init({
+                mode = "symbol_text",
+                preset = "codicons",
+                symbol_map = {
+                    Copilot = "",
+                },
+            })
+        end,
+    }
+
+    -- To measure Neovim's startup times
+    use { 'dstein64/vim-startuptime' }
+
+    use { 'tzachar/cmp-tabnine',
+        run = './install.sh',
+        config = function()
+            local tabnine = require('cmp_tabnine.config')
+            tabnine:setup({
+                max_lines = 1000,
+                max_num_results = 20,
+                sort = true,
+                run_on_every_keystroke = true,
+                snippet_placeholder = '..',
+                ignored_file_types = {
+                    -- default is not to ignore
+                    -- uncomment to ignore in lua:
+                    -- lua = true
+                },
+                show_prediction_strength = false
+            })
+        end,
+
+    }
+
+    use {
+        "folke/which-key.nvim",
+        config = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+            require("which-key").setup {
+                -- your configuration comes here
+                -- or leave it empty to use the default settings
+                -- refer to the configuration section below
+            }
+        end
+    }
+
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

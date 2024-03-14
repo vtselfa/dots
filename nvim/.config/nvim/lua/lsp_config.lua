@@ -65,7 +65,7 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
     -- if client.server_capabilities.documentFormattingProvider then
-        vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
+    vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
     -- end
 end
 
@@ -85,42 +85,77 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
+local lsp = require("lspconfig")
 local lsp_flags = {
     -- This is the default in Nvim 0.7+
     debounce_text_changes = 150,
 }
-
--- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('lspconfig')['pyright'].setup {
+-- -- Set up lspconfig.
+-- local coq = require("coq")
+-- vim.g.coq_settings = {
+--     auto_start = 'shut-up',
+--     xdg = true,
+--     clients = {
+--         tmux = {
+--             enabled = false,
+--         },
+--         buffers = {
+--             match_syms = true,
+--             same_filetype = true,
+--         },
+--     },
+--     display = {
+--         pum = {
+--             fast_close = false,
+--         },
+--         preview = { border = "rounded" },
+--         icons = { mode = "none" },
+--     }
+-- }
+
+-------------------------------------------------------------------------------
+-- PYTHON
+-- ----------------------------------------------------------------------------
+lsp.pyright.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
 }
 
-require('lspconfig')['tsserver'].setup {
+-------------------------------------------------------------------------------
+-- C / C++
+-------------------------------------------------------------------------------
+lsp.clangd.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
 }
 
-require('lspconfig')['rust_analyzer'].setup {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities,
-    settings = {
-        ["rust-analyzer"] = {}
-    }
-}
-
-require 'lspconfig'.bashls.setup {
+-------------------------------------------------------------------------------
+-- TYPESCRIPT
+-------------------------------------------------------------------------------
+lsp.tsserver.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
 }
 
-require 'lspconfig'.lua_ls.setup {
+
+-------------------------------------------------------------------------------
+-- BASH
+-------------------------------------------------------------------------------
+lsp.bashls.setup {
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities,
+}
+
+-------------------------------------------------------------------------------
+-- LUA
+-------------------------------------------------------------------------------
+lsp.lua_ls.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
@@ -147,13 +182,18 @@ require 'lspconfig'.lua_ls.setup {
     },
 }
 
-require 'lspconfig'.jsonls.setup {
+-------------------------------------------------------------------------------
+-- JSON
+-------------------------------------------------------------------------------
+lsp.jsonls.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
 }
 
--- Rust LSP, via rust-tools
+-------------------------------------------------------------------------------
+-- RUST
+-------------------------------------------------------------------------------
 local rt = require("rust-tools")
 rt.setup({
     server = {
@@ -171,16 +211,28 @@ rt.setup({
     },
 })
 
+-------------------------------------------------------------------------------
+-- YAML
+-------------------------------------------------------------------------------
 local cfg = require("yaml-companion").setup({
     lspconfig = {
         on_attach = on_attach,
         flags = lsp_flags,
         capabilities = capabilities,
+        settings = {
+            redhat = { telemetry = { enabled = false } },
+            yaml = {
+                customTags = { "!e", "!f", "!env", "!req" },
+            },
+        },
     },
 })
-require("lspconfig")["yamlls"].setup(cfg)
+lsp["yamlls"].setup(cfg)
 
--- Zettelkasten
+
+-------------------------------------------------------------------------------
+-- ZETTELKASTEN
+-------------------------------------------------------------------------------
 require("zk").setup({
     -- can be "telescope", "fzf" or "select" (`vim.ui.select`)
     picker = "telescope",
@@ -201,6 +253,9 @@ require("zk").setup({
     },
 })
 
+-------------------------------------------------------------------------------
+-- NULL LS
+-------------------------------------------------------------------------------
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
@@ -219,3 +274,5 @@ null_ls.setup({
     },
     on_attach = on_attach,
 })
+
+-- vim.cmd('COQnow -s')
