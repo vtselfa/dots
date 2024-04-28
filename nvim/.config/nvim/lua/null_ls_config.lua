@@ -14,7 +14,7 @@ null_ls.setup({
         null_ls.builtins.diagnostics.buf,
         null_ls.builtins.diagnostics.protolint,
         -- python
-        null_ls.builtins.diagnostics.ruff,
+        -- null_ls.builtins.diagnostics.ruff,
         null_ls.builtins.diagnostics.pylint,
         null_ls.builtins.formatting.black,
         -- spell

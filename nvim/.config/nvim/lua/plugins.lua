@@ -1,186 +1,210 @@
-local ensure_packer = function()
-    local fn = vim.fn
-    local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
-    if fn.empty(fn.glob(install_path)) > 0 then
-        fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
-        vim.cmd [[packadd packer.nvim]]
-        return true
-    end
-    return false
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
+vim.opt.rtp:prepend(lazypath)
 
-local packer_bootstrap = ensure_packer()
-return require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
+require("lazy").setup({
+    -- As you press keys, it tells you which commands are available
+    "folke/which-key.nvim",
 
     -- Package manager for easily manage external editor tooling such as LSP servers, DAP servers, linters, and formatters
-    use { "williamboman/mason.nvim", config = function() require("mason").setup() end }
+    "williamboman/mason.nvim",
 
-    use { 'tpope/vim-dispatch', opt = true, cmd = { 'Dispatch', 'Make', 'Focus', 'Start' } }
+    'tpope/vim-unimpaired',
 
-    use { 'tpope/vim-unimpaired' }
+    -- Lets you highlight, navigate, and operate on sets of matching text. It extends vim's % key to language-specific words instead of just single characters.
+    { 'andymass/vim-matchup',            event = 'VimEnter' },
 
-    -- Load on an autocommand event
-    use { 'andymass/vim-matchup', event = 'VimEnter' }
-
-    -- Post-install/update hook with neovim command
-    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+    -- Provides a simple and easy way to use the interface for tree-sitter in Neovim and to provide some basic functionality such as highlighting based on it:
+    { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' },
 
     -- Colorscheme
-    use { 'ellisonleao/gruvbox.nvim',
+    {
+        'ellisonleao/gruvbox.nvim',
         config = function()
             vim.cmd('colorscheme gruvbox')
         end
-    }
+    },
 
     -- File explorer
-    use {
-        'nvim-tree/nvim-tree.lua',
-        requires = {
-            'nvim-tree/nvim-web-devicons',
+    {
+        "nvim-tree/nvim-tree.lua",
+        version = "*",
+        lazy = false,
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
         },
-        tag = 'nightly'
-    }
+        config = function()
+            require("nvim-tree").setup {}
+        end,
+    },
 
-    use {
+    {
         'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-    }
+        dependencies = { 'nvim-tree/nvim-web-devicons' }
+    },
 
-    -- Use dependency and run lua function after load
-    use {
-        'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' },
+    -- Git changes shown in the gutter
+    {
+        'lewis6991/gitsigns.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim' },
         config = function()
             require('gitsigns').setup()
         end
-    }
+    },
 
     -- Highly extendable fuzzy finder over lists
-    use {
-        'nvim-telescope/telescope.nvim', branch = '0.1.x',
-        requires = {
+    {
+        'nvim-telescope/telescope.nvim',
+        branch = '0.1.x',
+        dependencies = {
             'nvim-lua/plenary.nvim',
-            { 'nvim-telescope/telescope-fzf-native.nvim',    run = 'make' }, -- Faster sorter with fzf syntax
-            { "nvim-telescope/telescope-live-grep-args.nvim" },              -- Pass custom arguments to rg during live grep
-            'nvim-telescope/telescope-ui-select.nvim'                        -- Use telescope for vim.ui.select
+            {
+                'nvim-telescope/telescope-fzf-native.nvim',
+                build =
+                'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+            },                                                  -- Faster sorter with fzf syntax
+            { "nvim-telescope/telescope-live-grep-args.nvim" }, -- Pass custom arguments to rg during live grep
+            'nvim-telescope/telescope-ui-select.nvim'           -- Use telescope for vim.ui.select
         }
-    }
+    },
 
     -- File browser based on telescope
-    use { "nvim-telescope/telescope-file-browser.nvim",
-        requires = { 'nvim-telescope/telescope.nvim' },
-    }
+    {
+        "nvim-telescope/telescope-file-browser.nvim",
+        dependencies = { 'nvim-telescope/telescope.nvim' },
+    },
 
     -- Select tab using telescope
-    use {
+    {
         'LukasPietzschmann/telescope-tabs',
-        requires = { 'nvim-telescope/telescope.nvim' },
+        dependencies = { 'nvim-telescope/telescope.nvim' },
         config = function()
             require 'telescope-tabs'.setup {
-                -- Your custom config :^)
             }
         end
-    }
+    },
 
-    use({
+    -- Powerful diffs on the whole workspace
+    {
         "sindrets/diffview.nvim",
-        requires = "nvim-lua/plenary.nvim",
+        dependencies = "nvim-lua/plenary.nvim",
         cmd = { "DiffviewOpen", "DiffviewFileHistory" },
-    })
+    },
 
     -- Diffs arbitrary selections inside vim
-    use { 'rickhowe/spotdiff.vim',
-        requires = 'rickhowe/diffchar.vim',
-    }
+    {
+        'rickhowe/spotdiff.vim',
+        dependencies = 'rickhowe/diffchar.vim',
+    },
 
     -- Easily comment out lines
-    use { 'tomtom/tcomment_vim' }
+    { 'tomtom/tcomment_vim' },
 
     -- Configurations for Nvim LSP
-    use { 'neovim/nvim-lspconfig' }
+    { 'neovim/nvim-lspconfig' },
 
     -- Rust support
-    use { 'rust-lang/rust.vim', config = function()
-        vim.g.rustfmt_autosave = 1 -- Run rustfmt on save
-    end
-    }
+    {
+        'rust-lang/rust.vim',
+        config = function()
+            vim.g.rustfmt_autosave = 1 -- Run rustfmt on save
+        end
+    },
 
     -- A suite of goodies for Rust
-    use { 'simrat39/rust-tools.nvim' }
+    { 'simrat39/rust-tools.nvim' },
 
     -- Non-liniear undo history
-    use { 'mbbill/undotree' }
+    { 'mbbill/undotree' },
 
     -- Temporary fix until inlay hints are implemented by neovim itself
-    use { 'lvimuser/lsp-inlayhints.nvim' }
+    { 'lvimuser/lsp-inlayhints.nvim' },
 
     --  A simple, easy-to-use Vim alignment plugin.
-    use { 'junegunn/vim-easy-align', config = function()
-        vim.keymap.set('v', '<Enter>', [[<Plug>(EasyAlign)]])
-        vim.keymap.set('n', 'ga', [[<Plug>(EasyAlign)]])
-    end
-    }
+    {
+        'junegunn/vim-easy-align',
+        config = function()
+            vim.keymap.set('v', '<Enter>', [[<Plug>(EasyAlign)]])
+            vim.keymap.set('n', 'ga', [[<Plug>(EasyAlign)]])
+        end
+    },
 
     -- Git integration
-    use { 'tpope/vim-fugitive' }
+    { 'tpope/vim-fugitive' },
 
     -- Automatically follow the symlinks in Vim.
     -- This means that when you edit a pathname that is a symlink, vim will instead open the file using the resolved target path
-    use { 'moll/vim-bbye' }
-    use { 'aymericbeaumet/vim-symlink' }
-
-    -- Toggle between header and source
-    use { 'vim-scripts/a.vim' }
+    { 'aymericbeaumet/vim-symlink', dependencies = 'moll/vim-bbye' },
 
     -- Vim plugin to provide text objects to select a portion of the current line
-    use { 'kana/vim-textobj-line', requires = 'kana/vim-textobj-user' }
+    { 'kana/vim-textobj-line',      dependencies = 'kana/vim-textobj-user' },
 
     -- Sudo
-    use { 'chrisbra/SudoEdit.vim' }
+    { 'chrisbra/SudoEdit.vim' },
 
     -- CSV
-    use { 'chrisbra/csv.vim' }
+    -- { 'chrisbra/csv.vim' },
+    { 'mechatroner/rainbow_csv' },
 
     -- Mark multiple words and all their occurences with different colors
     -- Defines <leader> m,n,r,*,/
-    use { 'inkarkat/vim-mark', requires = { 'inkarkat/vim-ingo-library' } }
+    { 'inkarkat/vim-mark',          dependencies = { 'inkarkat/vim-ingo-library' } },
 
     -- Enable repeating supported plugin maps
-    use { 'tpope/vim-repeat' }
+    { 'tpope/vim-repeat' },
 
     -- Add/modify surroundings " ' [] etc
-    use({
+    {
         "kylechui/nvim-surround",
-        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        version = "*", -- Use for stability; omit to use `main` branch for the latest features
+        event = "VeryLazy",
         config = function()
             require("nvim-surround").setup({
                 -- Configuration here, or leave empty to use defaults
             })
         end
-    })
+    },
 
     -- Vim sugar for the UNIX shell commands that need it the most.
-    use { 'tpope/vim-eunuch' }
+    { 'tpope/vim-eunuch' },
 
     -- Easily search for, substitute, and abbreviate multiple variants of a word
-    use {
+    {
         "tpope/vim-abolish",
         config = function()
             -- Disable coercion mappings. I use coerce.nvim for that.
             vim.g.abolish_no_mappings = true
         end,
-    }
+    },
+
+    -- Quickly change a keyword’s case
+    {
+        "gregorias/coerce.nvim",
+        tag = 'v1.0',
+        config = true,
+    },
 
     -- Updated cmake syntax
-    use { 'pboettch/vim-cmake-syntax' }
+    { 'pboettch/vim-cmake-syntax' },
 
     -- Vertical lines that indicate indentation level
-    use { "lukas-reineke/indent-blankline.nvim", }
+    { "lukas-reineke/indent-blankline.nvim", },
 
     -- Side panel with the document symbols
-    use { 'stevearc/aerial.nvim' }
+    { 'stevearc/aerial.nvim' },
 
-    use { "rcarriga/nvim-notify",
+    -- A fancy, configurable, notification manager for NeoVim
+    {
+        "rcarriga/nvim-notify",
         event = "UIEnter",
         config = function()
             local notify = require("notify")
@@ -204,12 +228,12 @@ return require('packer').startup(function(use)
                 vim.notify(method.message, params.type)
             end
         end,
-    }
+    },
 
     -- YAML lsp config and schema autodetection and download
-    use {
+    {
         "someone-stole-my-name/yaml-companion.nvim",
-        requires = {
+        dependencies = {
             { "neovim/nvim-lspconfig" },
             { "nvim-lua/plenary.nvim" },
             { "nvim-telescope/telescope.nvim" },
@@ -217,40 +241,81 @@ return require('packer').startup(function(use)
         config = function()
             require("telescope").load_extension("yaml_schema")
         end,
-    }
+    },
 
     -- Simple tools to help developers working with YAML
-    use {
+    {
         "cuducos/yaml.nvim",
         ft = { "yaml" }, -- optional
-        requires = {
+        dependencies = {
             "nvim-treesitter/nvim-treesitter",
             "nvim-telescope/telescope.nvim" -- optional
         },
-    }
+    },
 
-    use { "mickael-menu/zk-nvim" }
+    { "mickael-menu/zk-nvim" },
 
-    use { "nvimtools/none-ls.nvim",
-        requires = { "nvim-lua/plenary.nvim" },
-    }
+    -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua
+    {
+        "nvimtools/none-ls.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+    },
 
-    use { 'chentoast/marks.nvim' }
+    {
+        "RRethy/vim-illuminate",
+        opts = {
+            delay = 200,
+            large_file_cutoff = 2000,
+            large_file_overrides = {
+                providers = { "lsp" },
+            },
+        },
+        config = function(_, opts)
+            require("illuminate").configure(opts)
 
-    use {
+            local function map(key, dir, buffer)
+                vim.keymap.set("n", key, function()
+                    require("illuminate")["goto_" .. dir .. "_reference"](false)
+                end, { desc = dir:sub(1, 1):upper() .. dir:sub(2) .. " Reference", buffer = buffer })
+            end
+
+            map("]]", "next")
+            map("[[", "prev")
+
+            -- also set it after loading ftplugins, since a lot overwrite [[ and ]]
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function()
+                    local buffer = vim.api.nvim_get_current_buf()
+                    map("]]", "next", buffer)
+                    map("[[", "prev", buffer)
+                end,
+            })
+        end,
+        keys = {
+            { "]]", desc = "Next Reference" },
+            { "[[", desc = "Prev Reference" },
+        },
+    },
+
+    -- Refactoring library based off the Refactoring book by Martin Fowler
+    {
         "ThePrimeagen/refactoring.nvim",
-        requires = {
-            { "nvim-lua/plenary.nvim" },
-            { "nvim-treesitter/nvim-treesitter" }
-        }
-    }
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("refactoring").setup()
+        end,
+    },
 
-    use { 'terrastruct/d2-vim' }
+    { 'terrastruct/d2-vim' },
 
-    use({ 'toppair/peek.nvim', run = 'deno task --quiet build:fast' })
+    { 'toppair/peek.nvim',   build = 'deno task --quiet build:fast' },
 
     -- focus on a selected region while making the rest inaccessible
-    use { 'chrisbra/NrrwRgn',
+    {
+        'chrisbra/NrrwRgn',
         config = function()
             vim.cmd [[
               command! -nargs=* -bang -range -complete=filetype NN
@@ -258,12 +323,12 @@ return require('packer').startup(function(use)
                   \ | set filetype=<args>
             ]]
         end,
-    }
+    },
 
     -- Clipboard management
-    use {
+    {
         "AckslD/nvim-neoclip.lua",
-        requires = {
+        dependencies = {
             { 'kkharji/sqlite.lua', module = 'sqlite' },
         },
         config = function()
@@ -278,25 +343,25 @@ return require('packer').startup(function(use)
             require("telescope").load_extension("neoclip")
             require("telescope").load_extension("macroscope")
         end,
-    }
+    },
 
-    use {
+    {
         'hrsh7th/nvim-cmp',
-        requires = {
+        dependencies = {
             'neovim/nvim-lspconfig',
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-path',
             'hrsh7th/cmp-cmdline',
-            { 'L3MON4D3/LuaSnip', requires = { "rafamadriz/friendly-snippets" } },
+            { 'L3MON4D3/LuaSnip', dependencies = { "rafamadriz/friendly-snippets" } },
             'saadparwaiz1/cmp_luasnip',
             "hrsh7th/cmp-nvim-lsp-signature-help",
             "hrsh7th/cmp-nvim-lsp-document-symbol",
             "andersevenrud/cmp-tmux",
         }
-    }
+    },
 
-    use {
+    {
         "onsails/lspkind-nvim",
         config = function()
             require("lspkind").init({
@@ -307,13 +372,14 @@ return require('packer').startup(function(use)
                 },
             })
         end,
-    }
+    },
 
     -- To measure Neovim's startup times
-    use { 'dstein64/vim-startuptime' }
+    { 'dstein64/vim-startuptime' },
 
-    use { 'tzachar/cmp-tabnine',
-        run = './install.sh',
+    {
+        'tzachar/cmp-tabnine',
+        build = './install.sh',
         config = function()
             local tabnine = require('cmp_tabnine.config')
             tabnine:setup({
@@ -331,9 +397,9 @@ return require('packer').startup(function(use)
             })
         end,
 
-    }
+    },
 
-    use {
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
@@ -345,11 +411,4 @@ return require('packer').startup(function(use)
             }
         end
     }
-
-
-    -- Automatically set up your configuration after cloning packer.nvim
-    -- Put this at the end after all plugins
-    if packer_bootstrap then
-        require('packer').sync()
-    end
-end)
+})

@@ -64,9 +64,12 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
-    -- if client.server_capabilities.documentFormattingProvider then
     vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
-    -- end
+
+    if client.name == 'ruff_lsp' then
+        -- Disable hover in favor of Pyright
+        client.server_capabilities.hoverProvider = false
+    end
 end
 
 -- Temporary fix for inlay hints
@@ -92,36 +95,30 @@ local lsp_flags = {
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- -- Set up lspconfig.
--- local coq = require("coq")
--- vim.g.coq_settings = {
---     auto_start = 'shut-up',
---     xdg = true,
---     clients = {
---         tmux = {
---             enabled = false,
---         },
---         buffers = {
---             match_syms = true,
---             same_filetype = true,
---         },
---     },
---     display = {
---         pum = {
---             fast_close = false,
---         },
---         preview = { border = "rounded" },
---         icons = { mode = "none" },
---     }
--- }
 
 -------------------------------------------------------------------------------
 -- PYTHON
 -- ----------------------------------------------------------------------------
+lsp.ruff_lsp.setup {
+    on_attach = on_attach,
+}
+
 lsp.pyright.setup {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
+    settings = {
+        pyright = {
+            -- Using Ruff's import organizer
+            disableOrganizeImports = true,
+        },
+        python = {
+            analysis = {
+                -- Ignore all files for analysis to exclusively use Ruff for linting
+                ignore = { '*' },
+            },
+        },
+    },
 }
 
 -------------------------------------------------------------------------------
@@ -254,23 +251,23 @@ require("zk").setup({
 })
 
 -------------------------------------------------------------------------------
--- NULL LS
+-- NONE LS
 -------------------------------------------------------------------------------
-local null_ls = require("null-ls")
-null_ls.setup({
+local none_ls = require("null-ls")
+none_ls.setup({
     sources = {
-        null_ls.builtins.code_actions.refactoring,
+        none_ls.builtins.code_actions.refactoring,
         -- shell
-        null_ls.builtins.code_actions.shellcheck,
+        none_ls.builtins.formatting.shellharden,
         -- protobuf
-        null_ls.builtins.diagnostics.buf,
-        null_ls.builtins.diagnostics.protolint,
+        none_ls.builtins.diagnostics.buf,
+        none_ls.builtins.diagnostics.protolint,
         -- python
-        null_ls.builtins.diagnostics.ruff,
-        null_ls.builtins.diagnostics.pylint,
-        null_ls.builtins.formatting.black,
+        -- none_ls.builtins.diagnostics.ruff,
+        none_ls.builtins.diagnostics.pylint,
+        none_ls.builtins.formatting.black,
         -- spell
-        null_ls.builtins.completion.spell,
+        none_ls.builtins.completion.spell,
     },
     on_attach = on_attach,
 })
