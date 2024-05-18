@@ -4,6 +4,7 @@ local actions_layout = require("telescope.actions.layout")
 local transform_mod = require("telescope.actions.mt").transform_mod
 local lga_actions = require("telescope-live-grep-args.actions")
 local fb_actions = require "telescope".extensions.file_browser.actions
+local builtin = require('telescope.builtin')
 
 -- From https://github.com/rebelot/dotfiles/blob/master/nvim/lua/plugins/telescope.lua
 local function multiopen(prompt_bufnr, method)
@@ -100,10 +101,12 @@ local function stopinsert(callback)
     end
 end
 
+-- Default value for the telescope find_files builtin picker
+vim.g.telescope_find_files_show_hidden = true
 require('telescope').setup {
     defaults = {
         layout_config = { preview_width = 0.5 },
-        path_display = {"absolute"},
+        path_display = { "absolute" },
         mappings = {
             i = {
                 ["<S-Down>"] = actions.preview_scrolling_down,
@@ -140,6 +143,28 @@ require('telescope').setup {
         lsp_workspace_symbols = { fname_width = 100, },
         quickfix = { fname_width = 100, },
         tags = { fname_width = 100, },
+        find_files = {
+            mappings = {
+                i = {
+                    -- Toggle showing hidden files
+                    ["<C-e>"] = function(prompt_bufnr)
+                        vim.g.telescope_find_files_show_hidden = not vim.g.telescope_find_files_show_hidden
+
+                        local current_picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+                        local prompt_text = current_picker:_get_prompt()
+                        actions.close(prompt_bufnr)
+                        builtin.find_files({
+                            cwd = current_picker.cwd,
+                            hidden = vim.g.telescope_find_files_show_hidden
+                        })
+
+                        vim.schedule(function()
+                            vim.fn.feedkeys(prompt_text, "n")
+                        end)
+                    end,
+                },
+            },
+        },
     },
     extensions = {
         live_grep_args = {
@@ -158,15 +183,15 @@ require('telescope').setup {
             mappings = {
                 -- extend mappings
                 i = {
-                    ["<C-h>"] = fb_actions.toggle_hidden,
+                    ["<C-e>"] = fb_actions.toggle_hidden,
                     ["<C-Space>"] = fb_actions.goto_parent_dir,
                 },
                 n = {
-                    ["<C-h>"] = fb_actions.toggle_hidden,
+                    ["<C-e>"] = fb_actions.toggle_hidden,
                     ["<C-Space>"] = fb_actions.goto_parent_dir,
                 },
             },
-        }
+        },
     }
 }
 require('telescope').load_extension('fzf')
@@ -174,69 +199,72 @@ require("telescope").load_extension("ui-select")
 require("telescope").load_extension("file_browser")
 require("telescope").load_extension("live_grep_args")
 
-local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
 local map = vim.keymap.set
 
--- Find Files (including hidden ones)
-vim.keymap.set('n', '<leader>ff', function() builtin.find_files { hidden = true } end, {})
+map('n', '<leader>ff', function() builtin.find_files { hidden = vim.g.telescope_find_files_show_hidden } end,
+    { desc = "Telescope: Find files" })
 
--- Find files in the directory of the Current buffer using a telescope-based file browser
-vim.keymap.set('n', '<leader>fc',
-    function() require('telescope').extensions.file_browser.file_browser { path = utils.buffer_dir() } end
-    , {})
+map('n', '<leader>fc',
+    function() require('telescope').extensions.file_browser.file_browser { path = utils.buffer_dir() } end,
+    { desc = "Telescope: Browse from the buffer's directory" })
 
--- Find Git files
-vim.keymap.set('n', '<leader>fg', builtin.git_files, {})
+map('n', '<leader>fg', builtin.git_files,
+    { desc = "Telescope: Find files in git" })
 
--- Search for word Live
-vim.keymap.set('n', '<leader>sl', require("telescope").extensions.live_grep_args.live_grep_args, {})
+map('n', '<leader>sl', require("telescope").extensions.live_grep_args.live_grep_args,
+    { desc = "Telescope: Live grep" })
 
--- Search for Word
-vim.keymap.set('n', '<leader>sw', builtin.grep_string, {})
+map('n', '<leader>sw', builtin.grep_string,
+    { desc = "Telescope: Search for word" })
 
--- Search for word in current Buffer
-vim.keymap.set('n', '<leader>sb', builtin.current_buffer_fuzzy_find, {})
+map('x', "<leader>sw", require("telescope.builtin").grep_string,
+    { desc = "Telescope: Search for word" })
 
--- Search Help
-vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
+map('n', '<leader>sb', builtin.current_buffer_fuzzy_find,
+    { desc = "Telescope: Search in current buffer" })
 
--- Search Command history
-vim.keymap.set('n', '<leader>sc', builtin.command_history, {})
+map('n', '<leader>sh', builtin.help_tags,
+    { desc = "Telescope: Search help" })
 
--- Search Command history
-vim.keymap.set('n', '<leader>ss', builtin.lsp_workspace_symbols, { desc = "Search symbols in the workspace" })
+map('n', '<leader>sc', builtin.command_history,
+    { desc = "Telescope: Search command history" })
 
--- Diagnostics
-vim.keymap.set('n', '<leader>dd', builtin.diagnostics, {})
+map('n', '<leader>ss', builtin.lsp_workspace_symbols,
+    { desc = "Telescope: Search symbols in the workspace" })
 
--- Diagnostics for Current buffer
-vim.keymap.set('n', '<leader>dc', function() builtin.diagnostics { bufnr = 0 } end, {})
+map('n', '<leader>dd', builtin.diagnostics,
+    { desc = "Telescope: Diagnostics" })
 
--- Telescope Resume previous session
-vim.keymap.set('n', '<leader>tr', builtin.resume, {})
+map("n", "<leader>sq", require("telescope.builtin").quickfix,
+    { desc = "Telescope: Quickfix" })
 
--- Buffers
-vim.keymap.set('n', '<leader>bb', builtin.buffers, {})
+map('n', '<leader>dc', function() builtin.diagnostics { bufnr = 0 } end,
+    { desc = "Telescope: Diagnostics for current buffer" })
 
--- Tabs
-vim.keymap.set('n', '<leader>tt', require('telescope-tabs').list_tabs, {})
+map('n', '<leader>tr', builtin.resume,
+    { desc = "Telescope: Resume previous session" })
 
--- Tab Return (to the previous one)
-vim.keymap.set('n', '<space>t', require('telescope-tabs').go_to_previous, {})
+map('n', '<leader>bb', builtin.buffers,
+    { desc = "Telescope: Buffers" })
 
--- Marks
-vim.keymap.set('n', '<leader>fm', builtin.marks, {})
+map('n', '<leader>tt', require('telescope-tabs').list_tabs,
+    { desc = "Telescope: Tabs" })
 
-map("n", "<leader>fj", require("telescope.builtin").jumplist, { desc = "Telescope: Jumplist" })
+map('n', '<space>t', require('telescope-tabs').go_to_previous,
+    { desc = "Return to the last visited tab" })
 
-map("n", '<leader>s"', require("telescope.builtin").registers, { desc = "Telescope: Registers" })
+map('n', '<leader>fm', builtin.marks,
+    { desc = "Telescope: Marks" })
 
-map("n", "<leader>T", function()
-    require("telescope.builtin").builtin({ include_extensions = true })
-end, { desc = "Telescope: List pickers" })
+map("n", "<leader>fj", require("telescope.builtin").jumplist,
+    { desc = "Telescope: Jumplist" })
 
-map("n", "<leader>st", require("telescope.builtin").treesitter, { desc = "Telescope: Treesitter" })
+map("n", '<leader>s"', require("telescope.builtin").registers,
+    { desc = "Telescope: Registers" })
 
+map("n", "<leader>T", function() require("telescope.builtin").builtin({ include_extensions = true }) end,
+    { desc = "Telescope: List pickers" })
 
-map("n", "<leader>sq", require("telescope.builtin").quickfix, { desc = "Telescope: Quickfix" })
+map("n", "<leader>st", require("telescope.builtin").treesitter,
+    { desc = "Telescope: Treesitter" })
