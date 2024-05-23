@@ -12,9 +12,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    -- As you press keys, it tells you which commands are available
-    "folke/which-key.nvim",
-
     -- Package manager for easily manage external editor tooling such as LSP servers, DAP servers, linters, and formatters
     "williamboman/mason.nvim",
 
@@ -121,7 +118,11 @@ require("lazy").setup({
     },
 
     -- A suite of goodies for Rust
-    { 'simrat39/rust-tools.nvim' },
+    {
+        'mrcjkb/rustaceanvim',
+        version = '^4', -- Recommended
+        lazy = false,   -- This plugin is already lazy
+    },
 
     -- Non-liniear undo history
     { 'mbbill/undotree' },
@@ -202,31 +203,62 @@ require("lazy").setup({
     -- Side panel with the document symbols
     { 'stevearc/aerial.nvim' },
 
-    -- A fancy, configurable, notification manager for NeoVim
+    -- A simple Neovim plugin that enhances LSP code actions with fully customizable signs,
+    -- personalized actions, and server-specific mappings, making code actions more predictable.
     {
-        "rcarriga/nvim-notify",
-        event = "UIEnter",
+        "luckasRanarison/clear-action.nvim",
+        event = "LspAttach",
+        opts = {
+            signs = {
+                show_count = false,
+                show_label = true,
+                combine = true,
+            },
+            popup = {
+                hide_cursor = true,
+            },
+            mappings = {
+                code_action = { "<leader>ca" },
+                apply_first = { "<leader>aa"},
+                quickfix = { "<leader>aq"},
+                quickfix_next = { "<leader>an"},
+                quickfix_prev = { "<leader>ap"},
+                refactor = { "<leader>ar"},
+                refactor_inline = { "<leader>aR"},
+                actions = {
+                    ["rust_analyzer"] = {
+                        ["Import"] = { "<leader>ai"},
+                        ["Replace if"] = { "<leader>am"},
+                        ["Fill match"] = { "<leader>af"},
+                        ["Wrap"] = { "<leader>aw"},
+                        ["Insert `mod"] = { "<leader>aM"},
+                        ["Insert `pub"] = { "<leader>aP"},
+                        ["Add braces"] = { "<leader>ab"},
+                    },
+                },
+            },
+            quickfix_filters = {
+                ["rust_analyzer"] = {
+                    ["E0412"] = "Import",
+                    ["E0425"] = "Import",
+                    ["E0433"] = "Import",
+                    ["unused_imports"] = "remove",
+                },
+            },
+        },
+    },
+
+    {
+        'j-hui/fidget.nvim',
         config = function()
-            local notify = require("notify")
-            notify.setup {}
-            vim.notify = notify
+            local fidget = require("fidget")
 
-            local vim_notify = vim.notify
-            vim.notify = function(msg, ...)
-                if msg:match("warning: multiple different client offset_encodings") then
-                    return
-                end
-
-                vim_notify(msg, ...)
-            end
-
-            vim.keymap.set("n", "<esc>", function()
-                notify.dismiss()
-                vim.cmd.noh()
-            end)
-            vim.lsp.handlers["window/showMessage"] = function(_, method, params, _)
-                vim.notify(method.message, params.type)
-            end
+            fidget.setup {
+                -- Options related to notification subsystem
+                notification = {
+                    override_vim_notify = true, -- Automatically override vim.notify() with Fidget
+                },
+            }
         end,
     },
 
@@ -399,6 +431,7 @@ require("lazy").setup({
 
     },
 
+    -- As you press keys, it tells you which commands are available
     {
         "folke/which-key.nvim",
         config = function()

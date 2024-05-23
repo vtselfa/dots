@@ -162,6 +162,14 @@ require('telescope').setup {
                             vim.fn.feedkeys(prompt_text, "n")
                         end)
                     end,
+
+                    -- Open a file browser pointing to where the selected entry was
+                    ["<C-b>"] = function(prompt_bufnr)
+                        local current_picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+                        local entry = action_state.get_selected_entry()
+                        actions.close(prompt_bufnr)
+                        require('telescope').extensions.file_browser.file_browser { path = entry.path }
+                    end,
                 },
             },
         },
@@ -181,15 +189,29 @@ require('telescope').setup {
         },
         file_browser = {
             mappings = {
-                -- extend mappings
-                i = {
-                    ["<C-e>"] = fb_actions.toggle_hidden,
-                    ["<C-Space>"] = fb_actions.goto_parent_dir,
-                },
                 n = {
                     ["<C-e>"] = fb_actions.toggle_hidden,
                     ["<C-Space>"] = fb_actions.goto_parent_dir,
-                },
+
+                    -- Find files from the directory being browsed
+                    ["<C-f>"] = function(prompt_bufnr)
+                        local current_picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+                        local finder = current_picker.finder
+                        actions.close(prompt_bufnr)
+                        builtin.find_files({
+                            cwd = finder.path,
+                            hidden = vim.g.telescope_find_files_show_hidden
+                        })
+                    end,
+
+                    -- Search live from the directory being browsed
+                    ["<C-s>"] = function(prompt_bufnr)
+                        local current_picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+                        local finder = current_picker.finder
+                        actions.close(prompt_bufnr)
+                        require("telescope").extensions.live_grep_args.live_grep_args { search_dirs = { finder.path } }
+                    end,
+                }
             },
         },
     }

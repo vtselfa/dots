@@ -1,16 +1,3 @@
-local sign = function(opts)
-    vim.fn.sign_define(opts.name, {
-        texthl = opts.name,
-        text = opts.text,
-        numhl = ''
-    })
-end
-
-sign({ name = 'DiagnosticSignError', text = '' })
-sign({ name = 'DiagnosticSignWarn', text = '' })
-sign({ name = 'DiagnosticSignHint', text = '' })
-sign({ name = 'DiagnosticSignInfo', text = '' })
-
 vim.diagnostic.config({
     virtual_text = false,
     signs = true,
@@ -22,6 +9,14 @@ vim.diagnostic.config({
         source = 'always',
         header = '',
         prefix = '',
+    },
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = '',
+            [vim.diagnostic.severity.WARN]  = '',
+            [vim.diagnostic.severity.HINT]  = '⚑',
+            [vim.diagnostic.severity.INFO]  = '',
+        },
     },
 })
 
@@ -61,46 +56,33 @@ local on_attach = function(client, bufnr)
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, bufopts)
     vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
     vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format { async = true } end, bufopts)
 
-    if client.name == 'ruff_lsp' then
-        -- Disable hover in favor of Pyright
-        client.server_capabilities.hoverProvider = false
+    if client and client.supports_method('textDocument/inlayHint') then
+        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
     end
 end
 
--- Temporary fix for inlay hints
-require("lsp-inlayhints").setup()
-vim.api.nvim_create_augroup("LspAttach_inlayhints", {})
-vim.api.nvim_create_autocmd("LspAttach", {
-    group = "LspAttach_inlayhints",
-    callback = function(args)
-        if not (args.data and args.data.client_id) then
-            return
-        end
-
-        local bufnr = args.buf
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
-        require("lsp-inlayhints").on_attach(client, bufnr, false)
-    end,
-})
-
 local lsp = require("lspconfig")
-local lsp_flags = {
-    -- This is the default in Nvim 0.7+
-    debounce_text_changes = 150,
-}
+local lsp_flags = {}
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+capabilities.workspace = {
+    didChangeWatchedFiles = {
+        dynamicRegistration = false
+    }
+}
 
 
 -------------------------------------------------------------------------------
 -- PYTHON
 -- ----------------------------------------------------------------------------
 lsp.ruff_lsp.setup {
-    on_attach = on_attach,
+    on_attach = function(client, bufnr)
+        -- Disable hover in favor of Pyright
+        client.server_capabilities.hoverProvider = false
+        on_attach(client, bufnr)
+    end,
 }
 
 lsp.pyright.setup {
@@ -138,7 +120,6 @@ lsp.tsserver.setup {
     flags = lsp_flags,
     capabilities = capabilities,
 }
-
 
 -------------------------------------------------------------------------------
 -- BASH
@@ -191,22 +172,38 @@ lsp.jsonls.setup {
 -------------------------------------------------------------------------------
 -- RUST
 -------------------------------------------------------------------------------
-local rt = require("rust-tools")
-rt.setup({
+vim.g.rustaceanvim = {
+    -- Plugin configuration
+    tools = {
+    },
+    -- LSP configuration
     server = {
-        on_attach = function(client, bufnr)
-            on_attach(client, bufnr)
-            -- Hover actions
-            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            -- Code action groups
-            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-        end,
+        on_attach = on_attach,
+        flags = lsp_flags,
+        capabilities = capabilities,
+        default_settings = {
+            -- rust-analyzer language server configuration
+            ['rust-analyzer'] = {
+                files = {
+                    excludeDirs = {
+                        "/Users/vicent.selfa/.rustup",
+                        ".cargo",
+                        ".config",
+                        ".git",
+                        ".gitlab",
+                        ".sqlx",
+                        "chart-values",
+                        "target",
+                    }
+                },
+                cargo = { targetDir = true },
+            },
+        },
     },
-    inlay_hints = {
-        -- The plugin lsp-inlayhints is taking care of this
-        auto = false,
+    -- DAP configuration
+    dap = {
     },
-})
+}
 
 -------------------------------------------------------------------------------
 -- YAML
@@ -271,5 +268,3 @@ none_ls.setup({
     },
     on_attach = on_attach,
 })
-
--- vim.cmd('COQnow -s')
